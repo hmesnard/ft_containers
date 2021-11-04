@@ -25,6 +25,7 @@ namespace ft
 
 			random_access_iterator() : ptr(NULL) {}
 			random_access_iterator(random_access_iterator const & src) : ptr(src.ptr) {}
+			random_access_iterator(T *ptr) : ptr(ptr) {}
 			virtual ~random_access_iterator();
 
 			random_access_iterator &	operator=(random_access_iterator const & rhs) { 
