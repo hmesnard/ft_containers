@@ -1,3 +1,6 @@
+#ifndef ITERATOR_HPP
+# define ITERATOR_HPP
+
 #include <cstddef>
 
 namespace ft
@@ -21,12 +24,14 @@ namespace ft
 	template<class T>
 	class random_access_iterator : public iterator<random_access_iterator_tag, T>
 	{
-		public: 
+		public:
+
+			typedef  typename iterator<random_access_iterator, T>::difference_type	difference_type; //WTF
 
 			random_access_iterator() : ptr(NULL) {}
 			random_access_iterator(random_access_iterator const & src) : ptr(src.ptr) {}
 			random_access_iterator(T *ptr) : ptr(ptr) {}
-			virtual ~random_access_iterator();
+			virtual ~random_access_iterator() {}
 
 			random_access_iterator &	operator=(random_access_iterator const & rhs) { 
 				this->ptr = rhs.ptr;
@@ -65,14 +70,15 @@ namespace ft
 
 			random_access_iterator		operator+(int n) {
 				random_access_iterator	ret = *this;
-				tmp.ptr += n;
+				ret.ptr += n;
 				return (ret);
 			}
 			random_access_iterator		operator-(int n) {
 				random_access_iterator	ret = *this;
-				tmp.ptr -= n;
+				ret.ptr -= n;
 				return (ret);
 			}
+			difference_type				operator-(random_access_iterator const & rhs) { return (this->ptr - rhs.ptr); }
 
 			random_access_iterator &	operator+=(int n) {
 				this->ptr += n;
@@ -91,11 +97,11 @@ namespace ft
 	class iterator_traits
 	{
 		public:
-			typedef Iterator::difference_type	difference_type;
-			typedef Iterator::value_type		value_type;
-			typedef Iterator::pointer			pointer;
-			typedef Iterator::reference			reference;
-			typedef Iterator::iterator_category	iterator_category;
+			typedef typename Iterator::difference_type		difference_type;
+			typedef typename Iterator::value_type			value_type;
+			typedef typename Iterator::pointer				pointer;
+			typedef typename Iterator::reference			reference;
+			typedef typename Iterator::iterator_category	iterator_category;
 	};
 
 	template<class T>
@@ -124,12 +130,12 @@ namespace ft
 	class reverse_iterator
 	{
 		public:
-			typedef It										iterator_type;
-			typedef iterator_traits<It>::iterator_category	iterator_category;
-			typedef iterator_traits<It>::value_type			value_type;
-			typedef iterator_traits<It>::difference_type	difference_type;
-			typedef iterator_traits<It>::pointer			pointer;
-			typedef iterator_traits<It>::reference			reference;
+			typedef It												iterator_type;
+			typedef typename iterator_traits<It>::iterator_category	iterator_category;
+			typedef typename iterator_traits<It>::value_type		value_type;
+			typedef typename iterator_traits<It>::difference_type	difference_type;
+			typedef typename iterator_traits<It>::pointer			pointer;
+			typedef typename iterator_traits<It>::reference			reference;
 
 			reverse_iterator() : _base() {}
 			explicit reverse_iterator(iterator_type it) : _base(it) {}
@@ -137,7 +143,7 @@ namespace ft
 
 			iterator_type	base() const { return (this->base); }
 
-			value_type &	operator*() const { return (*(_base--)); }
+			value_type &	operator*() const { return (*(_base - 1)); }
 			/*->*/
 			value_type &	operator[](difference_type n) const { return (*(_base - (n + 1))); }
 
@@ -154,7 +160,7 @@ namespace ft
 				this->_base++;
 				return (*this);
 			}
-			reverse_iterator	operator--() {
+			reverse_iterator	operator--(int) {
 				reverse_iterator ret = *this;
 				this->_base++;
 				return (ret);
@@ -176,3 +182,5 @@ namespace ft
 			iterator_type	_base;
 	};
 }
+
+#endif
