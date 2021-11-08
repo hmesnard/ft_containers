@@ -15,84 +15,6 @@ namespace ft
 		typedef Category  iterator_category;
 	};
 
-	struct input_iterator_tag {};
-	struct output_iterator_tag {};
-	struct forward_iterator_tag {};
-	struct bidirectional_iterator_tag {};
-	struct random_access_iterator_tag {};
-
-	template<class T>
-	class random_access_iterator : public iterator<random_access_iterator_tag, T>
-	{
-		public:
-
-			typedef  typename iterator<random_access_iterator, T>::difference_type	difference_type; //WTF
-
-			random_access_iterator() : ptr(NULL) {}
-			random_access_iterator(random_access_iterator const & src) : ptr(src.ptr) {}
-			random_access_iterator(T *ptr) : ptr(ptr) {}
-			virtual ~random_access_iterator() {}
-
-			random_access_iterator &	operator=(random_access_iterator const & rhs) { 
-				this->ptr = rhs.ptr;
-				return (*this);
-			}
-
-			bool	operator==(random_access_iterator const &rhs) const { return (this->ptr == rhs.ptr); }
-			bool	operator!=(random_access_iterator const &rhs) const { return (this->ptr != rhs.ptr); }
-			bool	operator<(random_access_iterator const &rhs) const { return (this->ptr < rhs.ptr); }
-			bool	operator>(random_access_iterator const &rhs) const { return (this->ptr > rhs.ptr); }
-			bool	operator<=(random_access_iterator const &rhs) const { return (this->ptr <= rhs.ptr); }
-			bool	operator>=(random_access_iterator const &rhs) const { return (this->ptr >= rhs.ptr); }
-
-			T &	operator*() const { return (*(this->ptr)); }
-			/*->*/
-			T &	operator[](int n) const { return (*(this->ptr + n)); }
-
-			random_access_iterator &	operator++() {
-				ptr++;
-				return (*this);
-			}
-			random_access_iterator		operator++(int) {
-				random_access_iterator	ret = *this;
-				++*this;
-				return (ret);
-			}
-			random_access_iterator &	operator--() {
-				ptr--;
-				return (*this);
-			}
-			random_access_iterator		operator--(int) {
-				random_access_iterator	ret = *this;
-				--*this;
-				return (ret);
-			}
-
-			random_access_iterator		operator+(int n) {
-				random_access_iterator	ret = *this;
-				ret.ptr += n;
-				return (ret);
-			}
-			random_access_iterator		operator-(int n) {
-				random_access_iterator	ret = *this;
-				ret.ptr -= n;
-				return (ret);
-			}
-			difference_type				operator-(random_access_iterator const & rhs) { return (this->ptr - rhs.ptr); }
-
-			random_access_iterator &	operator+=(int n) {
-				this->ptr += n;
-				return (*this);
-			}
-			random_access_iterator &	operator-=(int n) {
-				this->ptr -= n;
-				return (*this);
-			}
-
-		private:
-			T*	ptr;
-	};
-
 	template<class Iterator>
 	class iterator_traits
 	{
@@ -108,22 +30,22 @@ namespace ft
 	class iterator_traits<T*>
 	{
 		public:
-			typedef ptrdiff_t					difference_type;
-			typedef T							value_type;
-			typedef T*							pointer;
-			typedef T&							reference;
-			typedef random_access_iterator_tag	iterator_category;
+			typedef ptrdiff_t						difference_type;
+			typedef T								value_type;
+			typedef T*								pointer;
+			typedef T&								reference;
+			typedef std::random_access_iterator_tag	iterator_category;
 	};
 
 	template<class T>
 	class iterator_traits<const T*>
 	{
 		public:
-			typedef ptrdiff_t					difference_type;
-			typedef T							value_type;
-			typedef const T*					pointer;
-			typedef const T&					reference;
-			typedef random_access_iterator_tag	iterator_category;
+			typedef ptrdiff_t						difference_type;
+			typedef T								value_type;
+			typedef const T*						pointer;
+			typedef const T&						reference;
+			typedef std::random_access_iterator_tag	iterator_category;
 	};
 
 	template<class It>

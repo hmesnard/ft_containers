@@ -17,10 +17,88 @@ namespace ft
 			typedef typename allocator_type::const_reference				const_reference;
 			typedef typename allocator_type::pointer						pointer;
 			typedef typename allocator_type::const_pointer					const_pointer;
-			typedef ft::random_access_iterator<value_type>					iterator;
-			typedef ft::random_access_iterator<const value_type>			const_iterator;
+
+			template<class U>
+			class Viterator : public ft::iterator<std::random_access_iterator_tag, T>
+			{
+				public:
+
+					//typedef inheritance with templates
+					typedef  typename ft::iterator<std::random_access_iterator_tag, U>::value_type			value_type;
+					typedef  typename ft::iterator<std::random_access_iterator_tag, U>::difference_type		difference_type;
+					typedef  typename ft::iterator<std::random_access_iterator_tag, U>::pointer				pointer;
+					typedef  typename ft::iterator<std::random_access_iterator_tag, U>::reference			reference;
+					typedef  typename ft::iterator<std::random_access_iterator_tag, U>::iterator_category	iterator_category;
+
+					Viterator() : ptr(NULL) {}
+					Viterator(Viterator const & src) : ptr(src.ptr) {}
+					Viterator(pointer ptr) : ptr(ptr) {}
+					virtual ~Viterator() {}
+
+					Viterator &	operator=(Viterator const & rhs) {
+						this->ptr = rhs.ptr;
+						return (*this);
+					}
+
+					bool	operator==(Viterator const &rhs) const { return (this->ptr == rhs.ptr); }
+					bool	operator!=(Viterator const &rhs) const { return (this->ptr != rhs.ptr); }
+					bool	operator<(Viterator const &rhs) const { return (this->ptr < rhs.ptr); }
+					bool	operator>(Viterator const &rhs) const { return (this->ptr > rhs.ptr); }
+					bool	operator<=(Viterator const &rhs) const { return (this->ptr <= rhs.ptr); }
+					bool	operator>=(Viterator const &rhs) const { return (this->ptr >= rhs.ptr); }
+
+					reference	operator*() const { return (*(this->ptr)); }
+					/*->*/
+					reference	operator[](int n) const { return (*(this->ptr + n)); }
+
+					Viterator &	operator++() {
+						ptr++;
+						return (*this);
+					}
+					Viterator		operator++(int) {
+						Viterator	ret = *this;
+						++*this;
+						return (ret);
+					}
+					Viterator &	operator--() {
+						ptr--;
+						return (*this);
+					}
+					Viterator		operator--(int) {
+						Viterator	ret = *this;
+						--*this;
+						return (ret);
+					}
+
+					Viterator		operator+(int n) {
+						Viterator	ret = *this;
+						ret.ptr += n;
+						return (ret);
+					}
+					Viterator		operator-(int n) {
+						Viterator	ret = *this;
+						ret.ptr -= n;
+						return (ret);
+					}
+					difference_type				operator-(Viterator const & rhs) { return (this->ptr - rhs.ptr); }
+
+					Viterator &	operator+=(int n) {
+						this->ptr += n;
+						return (*this);
+					}
+					Viterator &	operator-=(int n) {
+						this->ptr -= n;
+						return (*this);
+					}
+
+				private:
+					pointer	ptr;
+			};
+
+			typedef Viterator<value_type>									iterator;
+			typedef Viterator<const value_type>								const_iterator;
 			typedef ft::reverse_iterator<iterator>							reverse_iterator;
-			typedef ft::reverse_iterator<const iterator>					const_reverse_iterator;
+			typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
 			typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
 			typedef typename allocator_type::size_type						size_type;
 
