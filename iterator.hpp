@@ -65,9 +65,9 @@ namespace ft
 
 			iterator_type	base() const { return (this->base); }
 
-			value_type &	operator*() const { return (*(_base - 1)); }
-			/*->*/
-			value_type &	operator[](difference_type n) const { return (*(_base - (n + 1))); }
+			reference	operator*() const { return (*(_base - 1)); }
+			pointer		operator->() const { return (_base - 1); } //test ca
+			reference	operator[](difference_type n) const { return (*(_base - (n + 1))); }
 
 			reverse_iterator &	operator++() {
 				this->_base--;

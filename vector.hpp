@@ -4,7 +4,8 @@
 #include <iostream>
 #include <stdexcept>
 #include "iterator.hpp"
-
+#include "utils.hpp"
+#define PV for(vector<int>::iterator it = this->begin(); it != this->end() + 3; it++) std::cout << *it << std::endl; std::cout << std::endl;
 namespace ft
 {
 	template<class T, class Alloc = std::allocator<T> >
@@ -48,7 +49,7 @@ namespace ft
 					bool	operator>=(Viterator const &rhs) const { return (this->ptr >= rhs.ptr); }
 
 					reference	operator*() const { return (*(this->ptr)); }
-					/*->*/
+					pointer		operator->() const { return (this->ptr); }
 					reference	operator[](int n) const { return (*(this->ptr + n)); }
 
 					Viterator &	operator++() {
@@ -109,7 +110,10 @@ namespace ft
 			vector(const vector& x) : _begin(NULL), _size(0), _capacity(0) { *this = x; }
 			~vector() { this->_alloc.deallocate(this->_begin, this->_capacity); }
 
-			vector&	operator=(const vector& x) { this->assign(x.begin(), x.end()); }
+			vector&	operator=(const vector& x) {
+				this->assign(x.begin(), x.end());
+				return (*this);
+			}
 
 			iterator begin() { return (iterator(this->_begin)); }
 			const_iterator begin() const { return (const_iterator(this->_begin)); }
@@ -169,20 +173,20 @@ namespace ft
 			reference back() { return (*(this->_begin + this->_size - 1)); }
 			const_reference back() const { return (*(this->_begin + this->_size - 1)); }
 
-			/*template<class InputIterator>
-			void assign(InputIterator first, InputIterator last) {
+			template<class InputIterator>
+			void assign(InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = NULL) {
 				this->resize(static_cast<size_type>(last - first));
 				InputIterator it2 = first;
 				for(iterator it1 = this->begin(); it2 != last; it1++)
 				{
-					*it1 = *it2;
+					this->_alloc.construct(&(*it1), *it2);
 					it2++;
 				}
-			}*/
-			void assign(size_type n, const value_type& val) {
+			}
+			void assign(size_type n, const value_type& val) { //des trucs a destroy ici
 				this->resize(n);
 				for(iterator it = this->begin(); it != this->end(); it++)
-					*it = val;
+					this->_alloc.construct(&(*it), val);//*it = val;
 			}
 			void push_back(const value_type& val) { this->resize(this->_size + 1, val); }
 			void pop_back() { this->resize(this->_size - 1); }
@@ -195,17 +199,20 @@ namespace ft
 					this->reserve(this->_size + n);
 				else if (this->_size + n > this->_capacity)
 					this->reserve(this->_capacity * 2);
+				//std::cout << static_cast<size_type>(position - this->begin()) << std::endl; valeur absurde
 				for(size_type i = this->_size - 1; i > static_cast<size_type>(position - this->begin()); i--)
 				{
+					//std::cout << "a" << std::endl;
 					this->_alloc.construct(this->_begin + i + n, this->_begin[i]);
 					this->_alloc.destroy(this->_begin + i);
 				}
+				//PV
 				for(size_type i = 0; i < n; i++)
 					this->_alloc.construct(&(*position) + i, val);
 				this->_size += n;
 			}
-			/*template<class InputIterator>
-			void insert(iterator position, InputIterator first, InputIterator last) {
+			template<class InputIterator>
+			void insert(iterator position, InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = NULL) {
 				size_type	n = static_cast<size_type>(last - first);
 				if (this->_size + n > this->_capacity * 2)
 					this->reserve(this->_size + n);
@@ -213,13 +220,13 @@ namespace ft
 					this->reserve(this->_capacity * 2);
 				for(size_type i = this->_size - 1; i > static_cast<size_type>(position - this->begin()); i--)
 				{
-					this->_alloc.construct(this->_begin + i + n, this->begin[i]);
+					this->_alloc.construct(this->_begin + i + n, this->_begin[i]);
 					this->_alloc.destroy(this->_begin + i);
 				}
 				for(InputIterator it = first; it != last; it++)
 					this->_alloc.construct(&(*position) + static_cast<size_type>(it - first), *it);
 				this->_size += n;
-			}*/
+			}
 			iterator erase(iterator position) { return (this->erase(position, position + 1)); }
 			iterator erase(iterator first, iterator last) {
 				for(iterator it = first; it != last; it++)
