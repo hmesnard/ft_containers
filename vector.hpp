@@ -71,23 +71,28 @@ namespace ft
 						return (ret);
 					}
 
-					Viterator		operator+(int n) {
+					Viterator		operator+(difference_type n) const {
 						Viterator	ret = *this;
 						ret.ptr += n;
 						return (ret);
 					}
-					Viterator		operator-(int n) {
+					friend Viterator	operator+(difference_type n, Viterator const & rhs) { //bonne maniere d'implementer cet overload ?
+						Viterator	ret = rhs;
+						ret.ptr+= n;
+						return (ret);
+					}
+					Viterator		operator-(difference_type n) const {
 						Viterator	ret = *this;
 						ret.ptr -= n;
 						return (ret);
 					}
-					difference_type				operator-(Viterator const & rhs) { return (this->ptr - rhs.ptr); }
+					difference_type	operator-(Viterator const & rhs) const { return (this->ptr - rhs.ptr); }
 
-					Viterator &	operator+=(int n) {
+					Viterator &	operator+=(difference_type n) {
 						this->ptr += n;
 						return (*this);
 					}
-					Viterator &	operator-=(int n) {
+					Viterator &	operator-=(difference_type n) {
 						this->ptr -= n;
 						return (*this);
 					}
@@ -195,18 +200,17 @@ namespace ft
 				return (position);
 			}
 			void insert(iterator position, size_type n, const value_type& val) {
+				size_type	pos = static_cast<size_type>(position - this->begin());
 				if (this->_size + n > this->_capacity * 2)
 					this->reserve(this->_size + n);
 				else if (this->_size + n > this->_capacity)
 					this->reserve(this->_capacity * 2);
-				//std::cout << static_cast<size_type>(position - this->begin()) << std::endl; valeur absurde
-				for(size_type i = this->_size - 1; i > static_cast<size_type>(position - this->begin()); i--)
+				position = this->begin() + pos;
+				for(reverse_iterator rit = this->rbegin(); rit != this->rend(); rit++)
 				{
-					//std::cout << "a" << std::endl;
-					this->_alloc.construct(this->_begin + i + n, this->_begin[i]);
-					this->_alloc.destroy(this->_begin + i);
+					this->_alloc.construct(&(*(rit)) + n, *rit);
+					this->_alloc.destroy(&(*rit));
 				}
-				//PV
 				for(size_type i = 0; i < n; i++)
 					this->_alloc.construct(&(*position) + i, val);
 				this->_size += n;
@@ -214,14 +218,16 @@ namespace ft
 			template<class InputIterator>
 			void insert(iterator position, InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = NULL) {
 				size_type	n = static_cast<size_type>(last - first);
+				size_type	pos = static_cast<size_type>(position - this->begin());
 				if (this->_size + n > this->_capacity * 2)
 					this->reserve(this->_size + n);
 				else if (this->_size + n > this->_capacity)
 					this->reserve(this->_capacity * 2);
-				for(size_type i = this->_size - 1; i > static_cast<size_type>(position - this->begin()); i--)
+				position = this->begin() + pos;
+				for(reverse_iterator rit = this->rbegin(); rit != this->rend(); rit++)
 				{
-					this->_alloc.construct(this->_begin + i + n, this->_begin[i]);
-					this->_alloc.destroy(this->_begin + i);
+					this->_alloc.construct(&(*rit) + n, *rit);
+					this->_alloc.destroy(&(*rit));
 				}
 				for(InputIterator it = first; it != last; it++)
 					this->_alloc.construct(&(*position) + static_cast<size_type>(it - first), *it);
@@ -265,6 +271,8 @@ namespace ft
 			size_type		_size;
 			size_type		_capacity;
 	};
+
+	//iterator == const_iterator rchl
 }
 
 #endif
