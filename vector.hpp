@@ -5,9 +5,94 @@
 #include <stdexcept>
 #include "iterator.hpp"
 #include "utils.hpp"
-#define PV for(vector<int>::iterator it = this->begin(); it != this->end() + 3; it++) std::cout << *it << std::endl; std::cout << std::endl;
+
 namespace ft
 {
+	template<class T>
+	class Viterator : public ft::iterator<std::random_access_iterator_tag, T>
+	{
+		public:
+
+			typedef  typename ft::iterator<std::random_access_iterator_tag, T>::value_type			value_type;
+			typedef  typename ft::iterator<std::random_access_iterator_tag, T>::difference_type		difference_type;
+			typedef  typename ft::iterator<std::random_access_iterator_tag, T>::pointer				pointer;
+			typedef  typename ft::iterator<std::random_access_iterator_tag, T>::reference			reference;
+			typedef  typename ft::iterator<std::random_access_iterator_tag, T>::iterator_category	iterator_category;
+
+			Viterator() : ptr(NULL) {}
+			Viterator(Viterator const & src) : ptr(src.ptr) {}
+			Viterator(pointer ptr) : ptr(ptr) {}
+			virtual ~Viterator() {}
+
+			operator Viterator<T const>() const { return (Viterator<T const>(this->ptr)); }
+
+			Viterator &	operator=(Viterator const & rhs) {
+				this->ptr = rhs.ptr;
+				return (*this);
+			}
+
+			bool	operator==(Viterator const &rhs) const { return (this->ptr == rhs.ptr); }
+			bool	operator!=(Viterator const &rhs) const { return (this->ptr != rhs.ptr); }
+			bool	operator<(Viterator const &rhs) const { return (this->ptr < rhs.ptr); }
+			bool	operator>(Viterator const &rhs) const { return (this->ptr > rhs.ptr); }
+			bool	operator<=(Viterator const &rhs) const { return (this->ptr <= rhs.ptr); }
+			bool	operator>=(Viterator const &rhs) const { return (this->ptr >= rhs.ptr); }
+
+			reference	operator*() const { return (*(this->ptr)); }
+			pointer		operator->() const { return (this->ptr); }
+			reference	operator[](difference_type n) const { return (*(this->ptr + n)); }
+
+			Viterator &	operator++() {
+				ptr++;
+				return (*this);
+			}
+			Viterator		operator++(int) {
+				Viterator	ret = *this;
+				++*this;
+				return (ret);
+			}
+			Viterator &	operator--() {
+				ptr--;
+				return (*this);
+			}
+			Viterator		operator--(int) {
+				Viterator	ret = *this;
+				--*this;
+				return (ret);
+			}
+
+			Viterator		operator+(difference_type n) const {
+				Viterator	ret = *this;
+				ret.ptr += n;
+				return (ret);
+			}
+			//friend Viterator	operator+(difference_type n, Viterator const & rhs) { return (rhs.operator+(n)); } //bonne maniere d'implementer cet overload ?
+			Viterator		operator-(difference_type n) const {
+				Viterator	ret = *this;
+				ret.ptr -= n;
+				return (ret);
+			}
+			difference_type	operator-(Viterator const & rhs) const { return (this->ptr - rhs.ptr); }
+
+			Viterator &	operator+=(difference_type n) {
+				this->ptr += n;
+				return (*this);
+			}
+			Viterator &	operator-=(difference_type n) {
+				this->ptr -= n;
+				return (*this);
+			}
+
+		private:
+			pointer	ptr;
+	};
+
+	template<class T>
+	Viterator<T>	operator+(typename Viterator<T>::difference_type n, Viterator<T> const & rhs) { return (rhs.operator+(n)); } //bonne maniere d'implementer cet overload ?
+
+	template<class T>
+	bool	operator==(Viterator<const T> const & lhs, Viterator<const T> const & rhs) { return (lhs.ptr == rhs.ptr); }
+
 	template<class T, class Alloc = std::allocator<T> >
 	class vector
 	{
@@ -18,88 +103,6 @@ namespace ft
 			typedef typename allocator_type::const_reference				const_reference;
 			typedef typename allocator_type::pointer						pointer;
 			typedef typename allocator_type::const_pointer					const_pointer;
-
-			template<class U>
-			class Viterator : public ft::iterator<std::random_access_iterator_tag, U>
-			{
-				public:
-
-					typedef  typename ft::iterator<std::random_access_iterator_tag, U>::value_type			value_type;
-					typedef  typename ft::iterator<std::random_access_iterator_tag, U>::difference_type	difference_type;
-					typedef  typename ft::iterator<std::random_access_iterator_tag, U>::pointer			pointer;
-					typedef  typename ft::iterator<std::random_access_iterator_tag, U>::reference			reference;
-					typedef  typename ft::iterator<std::random_access_iterator_tag, U>::iterator_category	iterator_category;
-
-					Viterator() : ptr(NULL) {}
-					Viterator(Viterator const & src) : ptr(src.ptr) {}
-					Viterator(pointer ptr) : ptr(ptr) {}
-					virtual ~Viterator() {}
-
-					Viterator &	operator=(Viterator const & rhs) {
-						this->ptr = rhs.ptr;
-						return (*this);
-					}
-
-					bool	operator==(Viterator const &rhs) const { return (this->ptr == rhs.ptr); }
-					bool	operator!=(Viterator const &rhs) const { return (this->ptr != rhs.ptr); }
-					bool	operator<(Viterator const &rhs) const { return (this->ptr < rhs.ptr); }
-					bool	operator>(Viterator const &rhs) const { return (this->ptr > rhs.ptr); }
-					bool	operator<=(Viterator const &rhs) const { return (this->ptr <= rhs.ptr); }
-					bool	operator>=(Viterator const &rhs) const { return (this->ptr >= rhs.ptr); }
-
-					reference	operator*() const { return (*(this->ptr)); }
-					pointer		operator->() const { return (this->ptr); }
-					reference	operator[](int n) const { return (*(this->ptr + n)); }
-
-					Viterator &	operator++() {
-						ptr++;
-						return (*this);
-					}
-					Viterator		operator++(int) {
-						Viterator	ret = *this;
-						++*this;
-						return (ret);
-					}
-					Viterator &	operator--() {
-						ptr--;
-						return (*this);
-					}
-					Viterator		operator--(int) {
-						Viterator	ret = *this;
-						--*this;
-						return (ret);
-					}
-
-					Viterator		operator+(difference_type n) const {
-						Viterator	ret = *this;
-						ret.ptr += n;
-						return (ret);
-					}
-					friend Viterator	operator+(difference_type n, Viterator const & rhs) { //bonne maniere d'implementer cet overload ?
-						Viterator	ret = rhs;
-						ret.ptri += n;
-						return (ret);
-					}
-					Viterator		operator-(difference_type n) const {
-						Viterator	ret = *this;
-						ret.ptr -= n;
-						return (ret);
-					}
-					difference_type	operator-(Viterator const & rhs) const { return (this->ptr - rhs.ptr); }
-
-					Viterator &	operator+=(difference_type n) {
-						this->ptr += n;
-						return (*this);
-					}
-					Viterator &	operator-=(difference_type n) {
-						this->ptr -= n;
-						return (*this);
-					}
-
-				private:
-					pointer	ptr;
-			};
-
 			typedef Viterator<value_type>									iterator;
 			typedef Viterator<const value_type>								const_iterator;
 			typedef ft::reverse_iterator<iterator>							reverse_iterator;
