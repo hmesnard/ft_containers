@@ -143,6 +143,14 @@ namespace ft
 	template <class It1, class It2>
 	bool operator>=(const reverse_iterator<It1>& lhs, const reverse_iterator<It2>& rhs) { return (lhs.base() <= rhs.base()); }
 
+	template<class Iterator>
+	reverse_iterator<Iterator> operator+(typename reverse_iterator<Iterator>::difference_type n, const reverse_iterator<Iterator>& rev_it) { return (rev_it + n); }
+
+	template<class Iterator>
+	typename reverse_iterator<Iterator>::difference_type operator-(const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs) { return (rhs.base() - lhs.base()); }
+
+	template <class It1, class It2>
+	typename reverse_iterator<It1>::difference_type operator-(const reverse_iterator<It1>& lhs, const reverse_iterator<It2>& rhs) { return (rhs.base() - lhs.base()); }
 }
 
 #endif

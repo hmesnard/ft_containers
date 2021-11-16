@@ -316,8 +316,8 @@ namespace ft
 		{
 			if (*lit != *rit)
 				return (false);
-			lit++;
-			rit++;
+			++lit;
+			++rit;
 		}
 		if (lit != lhs.end() || rit != rhs.end())
 			return (false);
@@ -329,7 +329,7 @@ namespace ft
 
 	template<class T, class Alloc>
 	bool operator<(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
-		return (std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+		return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
 	}
 
 	template<class T, class Alloc>
