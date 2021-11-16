@@ -306,6 +306,44 @@ namespace ft
 			size_type		_capacity;
 	};
 
+	template<class T, class Alloc>
+	bool operator==(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
+		if (lhs.size() != rhs.size())
+			return (false);
+		typename vector<T>::const_iterator	lit = lhs.begin();
+		typename vector<T>::const_iterator	rit = rhs.begin();
+		while (lit != lhs.end() && rit != rhs.end())
+		{
+			if (*lit != *rit)
+				return (false);
+			lit++;
+			rit++;
+		}
+		if (lit != lhs.end() || rit != rhs.end())
+			return (false);
+		return (true);
+	}
+
+	template<class T, class Alloc>
+	bool operator!=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) { return (!(lhs == rhs)); }
+
+	template<class T, class Alloc>
+	bool operator<(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
+		return (std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+	}
+
+	template<class T, class Alloc>
+	bool operator<=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) { return (!(rhs < lhs)); }
+
+	template<class T, class Alloc>
+	bool operator>(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) { return (rhs < lhs); }
+
+	template<class T, class Alloc>
+	bool operator>=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) { return (!(lhs < rhs)); }
+
+	template<class T, class Alloc>
+	void swap(vector<T, Alloc>& x, vector<T, Alloc>& y) { x.swap(y); }
+
 	//iterator == const_iterator rchl
 }
 
