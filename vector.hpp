@@ -31,12 +31,23 @@ namespace ft
 				return (*this);
 			}
 
-			bool	operator==(Viterator const &rhs) const { return (this->ptr == rhs.ptr); }
-			bool	operator!=(Viterator const &rhs) const { return (this->ptr != rhs.ptr); }
-			bool	operator<(Viterator const &rhs) const { return (this->ptr < rhs.ptr); }
-			bool	operator>(Viterator const &rhs) const { return (this->ptr > rhs.ptr); }
-			bool	operator<=(Viterator const &rhs) const { return (this->ptr <= rhs.ptr); }
-			bool	operator>=(Viterator const &rhs) const { return (this->ptr >= rhs.ptr); }
+			template<class T1, class T2>
+			friend bool	operator==(Viterator<T1> const &lhs, Viterator<T2> const &rhs);// { return (lhs.ptr == rhs.ptr); }
+
+			template<class T1, class T2>
+			friend bool	operator!=(Viterator<T1> const &lhs, Viterator<T2> const &rhs);// { return (lhs.ptr != rhs.ptr); }
+
+			template<class T1, class T2>
+			friend bool	operator<(Viterator<T1> const &lhs, Viterator<T2> const &rhs);// { return (lhs.ptr < rhs.ptr); }
+
+			template<class T1, class T2>
+			friend bool	operator>(Viterator<T1> const &lhs, Viterator<T2> const &rhs);// { return (lhs.ptr > rhs.ptr); }
+
+			template<class T1, class T2>
+			friend bool	operator<=(Viterator<T1> const &lhs, Viterator<T2> const &rhs);// { return (lhs.ptr <= rhs.ptr); }
+
+			template<class T1, class T2>
+			friend bool	operator>=(Viterator<T1> const &lhs, Viterator<T2> const &rhs);// { return (lhs.ptr >= rhs.ptr); }
 
 			reference	operator*() const { return (*(this->ptr)); }
 			pointer		operator->() const { return (this->ptr); }
@@ -90,8 +101,27 @@ namespace ft
 	template<class T>
 	Viterator<T>	operator+(typename Viterator<T>::difference_type n, Viterator<T> const & rhs) { return (rhs.operator+(n)); } //bonne maniere d'implementer cet overload ?
 
-	template<class T>
-	bool	operator==(Viterator<const T> const & lhs, Viterator<const T> const & rhs) { return (lhs.ptr == rhs.ptr); }
+	//template<class T>
+	//bool	operator==(Viterator<T> const & lhs, Viterator<const T> const & rhs) { std::cout << "222" << std::endl; return (lhs.ptr == rhs.ptr); }
+
+	template<class T1, class T2>
+	bool	operator==(Viterator<T1> const &lhs, Viterator<T2> const &rhs) { return (lhs.ptr == rhs.ptr); }
+
+	template<class T1, class T2>
+	bool	operator!=(Viterator<T1> const &lhs, Viterator<T2> const &rhs) { return (lhs.ptr != rhs.ptr); }
+
+	template<class T1, class T2>
+	bool	operator<(Viterator<T1> const &lhs, Viterator<T2> const &rhs) { return (lhs.ptr < rhs.ptr); }
+
+	template<class T1, class T2>
+	bool	operator>(Viterator<T1> const &lhs, Viterator<T2> const &rhs) { return (lhs.ptr > rhs.ptr); }
+
+	template<class T1, class T2>
+	bool	operator<=(Viterator<T1> const &lhs, Viterator<T2> const &rhs) { return (lhs.ptr <= rhs.ptr); }
+
+	template<class T1, class T2>
+	bool	operator>=(Viterator<T1> const &lhs, Viterator<T2> const &rhs) { return (lhs.ptr >= rhs.ptr); }
+
 
 	template<class T, class Alloc = std::allocator<T> >
 	class vector
@@ -113,7 +143,7 @@ namespace ft
 			explicit vector(const allocator_type& alloc = allocator_type()) : _alloc(alloc), _begin(NULL), _size(0), _capacity(0) {}
 			explicit vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()) : _alloc(alloc), _begin(NULL), _size(0), _capacity(0) { this->assign(n, val); }
 			template<class InputIterator>
-			vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()) : _alloc(alloc), _begin(NULL), _size(0), _capacity(0) { this->assign(first, last); }
+			vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = NULL) : _alloc(alloc), _begin(NULL), _size(0), _capacity(0) { this->assign(first, last); } //verif ce qu il ce passe ici sans le enable if
 			vector(const vector& x) : _begin(NULL), _size(0), _capacity(0) { *this = x; }
 			~vector() { this->_alloc.deallocate(this->_begin, this->_capacity); }
 
