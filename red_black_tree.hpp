@@ -93,7 +93,9 @@ namespace ft
 				x->parent = x->right;
 				x->right = x->right->left;
 				x->parent->left = x;
-				if (x->parent->parent)
+				if (x->parent->parent && x->parent->parent->left == x)
+					x->parent->parent->left = x->parent;
+				else if (x->parent->parent && x->parent->parent->right == x)
 					x->parent->parent->right = x->parent;
 				else if (this->root == x)
 					this->root = x->parent;
@@ -107,8 +109,10 @@ namespace ft
 				x->parent = x->left;
 				x->left = x->left->right;
 				x->parent->right = x;
-				if (x->parent->parent)
+				if (x->parent->parent && x->parent->parent->left == x)
 					x->parent->parent->left = x->parent;
+				else if (x->parent->parent && x->parent->parent->right == x)
+					x->parent->parent->right = x->parent;
 				else if (this->root == x)
 					this->root = x->parent;
 			}
@@ -164,10 +168,15 @@ namespace ft
 						|| (node->parent->right == node && node->parent->parent->left == node->parent && (!node->parent->parent->right || !node->parent->parent->right->red)))
 				{
 					if (node->parent->left == node)
+					{
 						right_rotate(node->parent);
+						fix(node->right);
+					}
 					else
+					{
 						left_rotate(node->parent);
-					fix(node->parent);
+						fix(node->left);
+					}
 				}
 				else if ((node->parent->right == node && node->parent->parent->right == node->parent && (!node->parent->parent->left || !node->parent->parent->left->red))
 						|| (node->parent->left == node && node->parent->parent->left == node->parent && (!node->parent->parent->right || !node->parent->parent->right->red)))
