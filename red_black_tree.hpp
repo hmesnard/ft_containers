@@ -85,22 +85,32 @@ namespace ft
 				return (RBTiterator<T>(node));
 			}
 			void left_rotate(Node<T>* x) {
-				if (!x || !x->right || !x->right->left)
+				if (!x || !x->right/* || !x->right->left*/)
 					return ;
-				x->right->left->parent = x;
+				if (x->right->left)
+					x->right->left->parent = x;
 				x->right->parent = x->parent;
 				x->parent = x->right;
 				x->right = x->right->left;
 				x->parent->left = x;
+				if (x->parent->parent)
+					x->parent->parent->right = x->parent;
+				else if (this->root == x)
+					this->root = x->parent;
 			}
 			void right_rotate(Node<T>* x) {
-				if (!x || !x->left || !x->left->right)
+				if (!x || !x->left/* || !x->left->right*/)
 					return ;
-				x->left->right->parent = x;
+				if (x->left->right)
+					x->left->right->parent = x;
 				x->left->parent = x->parent;
 				x->parent = x->left;
 				x->left = x->left->right;
 				x->parent->right = x;
+				if (x->parent->parent)
+					x->parent->parent->left = x->parent;
+				else if (this->root == x)
+					this->root = x->parent;
 			}
 			void insert(T x)
 			{
@@ -121,11 +131,16 @@ namespace ft
 					else
 						return ;
 				}
-				if (old->left == node)
+				if (x < old->value)
+				{
 					old->left = new Node<T>(x, true, old);
+					fix(old->left);
+				}
 				else
+				{
 					old->right = new Node<T>(x, true, old);
-				fix(node);
+					fix(old->right);
+				}
 			}
 
 		public://
@@ -133,10 +148,12 @@ namespace ft
 			Node<T>*	root;
 			void fix(Node<T>* node)
 			{
-				if (!node || !node->parent || !node->parent->parent)
+				if (node && node == root && node->red)
+					node->red = false;
+				if (!node || !node->parent || !node->parent->parent || !node->red || !node->parent->red)
 					return ;
-				if ((node->parent->right == node && node->parent->parent->left == node->parent && node->parent->parent->right && node->parent->parent->right->red)
-					|| (node->parent->left == node && node->parent->parent->right == node->parent && node->parent->parent->left && node->parent->parent->left->red))
+				else if ((node->parent->parent->left == node->parent && node->parent->parent->right && node->parent->parent->right->red)
+					|| (node->parent->parent->right == node->parent && node->parent->parent->left && node->parent->parent->left->red))
 				{
 					node->parent->parent->red = !node->parent->parent->red;
 					node->parent->parent->left->red = !node->parent->parent->left->red;
