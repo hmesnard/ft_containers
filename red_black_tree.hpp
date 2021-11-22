@@ -57,6 +57,9 @@ namespace ft
 				return (*this);
 			}
 
+			bool operator==(const RBTiterator & rhs) const { return (this->node == rhs.node); }
+			bool operator!=(const RBTiterator & rhs) const { return (this->node != rhs.node); }
+
 		public://
 
 			Node<T>*	node;
@@ -70,7 +73,7 @@ namespace ft
 			RBT() : root(NULL) {}
 			void print() {
 				RBTiterator<T>	it = this->begin();
-				while (it.node)
+				while (it != this->end())
 				{
 					std::cout << it.node->value << ((it.node->red) ? " RED" : " BLACK") << std::endl;
 					++it;
@@ -84,6 +87,7 @@ namespace ft
 					node = node->left;
 				return (RBTiterator<T>(node));
 			}
+			RBTiterator<T> end() { return (RBTiterator<T>(NULL)); }
 			void left_rotate(Node<T>* x) {
 				if (!x || !x->right/* || !x->right->left*/)
 					return ;
