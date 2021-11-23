@@ -150,10 +150,150 @@ namespace ft
 					fix(old->right);
 				}
 			}
+			void erase(T x)
+			{
+				Node<T>* node = root;
+				Node<T>* next;
+				Node<T>* xx;
+				bool wasRed;
+
+				while (node)
+				{
+					if (x < node->value)
+						node = node->left;
+					else if (x > node->value)
+						node = node->right;
+					else
+						break ;
+				}
+				if (!node)
+					return ;
+				wasRed = node->red;
+				if (!node->left)
+				{
+					xx = node->right;
+					next = xx;
+					if (node->parent && node->parent->left == node)
+						node->parent->left = node->right;
+					else if (node->parent && node->parent->right == node) //&& pas necessaire ?
+						node->parent->right = node->right;
+					if (node->right)
+						node->right->parent = node->parent;
+				}
+				else if (!node->right)
+				{
+					xx = node->left;
+					next = xx;
+					if (node->parent && node->parent->left == node)
+						node->parent->left = node->left;
+					else if (node->parent && node->parent->right == node) // && pas necessaire ?
+						node->parent->right = node->left;
+					//if (node->left)
+						node->left->parent = node->parent;
+				}
+				else
+				{
+					next = node->right;
+					while (next->left)
+						next = next->left;
+					xx = next->right;
+					if (next->right)
+						next->right->parent = next->parent;
+					if (next->parent->right == next)
+						next->parent->right = next->right;
+					else
+						next->parent->left = next->right;
+
+					if (node->parent && node->parent->left == node)
+						node->parent->left = next;
+					else if (node->parent)
+						node->parent->right = next;
+					next->parent = node->parent;
+					node->left->parent = next;
+					next->left = node->left;
+					if (node->right)
+						node->right->parent = next;
+					next->right = node->right;
+				}
+				if (node == this->root)
+					this->root = next;
+				delete(node);
+
+				if (wasRed && (!next || next->red))
+					;
+				else if (wasRed)
+				{
+					next->red = true;
+					fixdel(xx);
+				}
+				else if (next && next->red)
+					next->red = false;
+				else
+					fixdel(xx);
+			}
 
 		public://
 
 			Node<T>*	root;
+			void fixdel(Node<T>* node)
+			{
+				Node<T>* sibling = (node->parent->left == node) ? node->parent->right : node->parent->left;
+
+				if (node->red)
+				{
+					node->red = false;
+					return ;
+				}
+				else if (sibling->red)
+				{
+					sibling->red = false;
+					node->parent->red = true;
+					if (node->parent->left == node)
+						left_rotate(node->parent);
+					else
+						right_rotate(node->parent);
+					fixdel(node);
+				}
+				else if (!sibling->left->red && !sibling->right->red)
+				{
+					sibling->red = true;
+					node = node->parent;
+					if (node->red)
+					{
+						node->red = false;
+						return ;
+					}
+					else if (node->parent)
+						fixdel(node);
+					else
+						return ;
+				}
+				else if ((node->parent->left == node && sibling->left->red && !sibling->right->red) ||
+						(node->parent->right == node && sibling->right->red && !sibling->left->red))
+				{
+					sibling->right->red = false;
+					sibling->left->red = false;
+					sibling->red = true;
+					if (node->parent->left == node)
+						right_rotate(sibling);
+					else
+						left_rotate(sibling);
+					fixdel(node);
+				}
+				else
+				{
+					sibling->red = node->parent->red;
+					node->parent->red = false;
+					sibling->right->red = false;
+					sibling->left->red = false;
+					if (node->parent->left == node)
+						left_rotate(node->parent);
+					else
+						right_rotate(node->parent);
+					return ;
+				}
+			}
+
 			void fix(Node<T>* node)
 			{
 				if (node && node == root && node->red)
