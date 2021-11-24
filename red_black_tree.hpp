@@ -10,7 +10,7 @@ namespace ft
 	{
 		typedef Node * branch;
 
-		Node(T val, bool red, branch parent = NULL) : parent(parent), left(NULL), right(NULL), red(red), value(val) {}
+		Node(T val = T(), bool red = false, branch parent = NULL) : parent(parent), left(NULL), right(NULL), red(red), value(val) {}
 
 		branch	parent;
 		branch	left;
@@ -18,7 +18,16 @@ namespace ft
 
 		bool	red;
 
-		T		value;
+		T		value; //pointeur plutot ?
+
+		bool	leaf() {
+			if (this->left && this->right)
+				return (true);
+			else if (!this->left && !this->right)
+				return (false);
+			else
+				throw (std::string("Incorrect Node"));
+		}
 	};
 
 	template<class T>
@@ -30,13 +39,13 @@ namespace ft
 			RBTiterator(Node<T>* node) : node(node) {}
 
 			RBTiterator & operator++() {
-				if (!this->node)
+				if (!this->node || this->node->leaf())
 					return (*this);
-				else if (this->node->right)
+				else if (!this->node->right->leaf())
 				{
 					this->node = this->node->right;
 					std::cout << "R" << std::endl;
-					while (this->node->left)
+					while (!this->node->left->leaf())
 					{
 						this->node = this->node->left;
 						std::cout << "L" << std::endl;
@@ -70,7 +79,7 @@ namespace ft
 	{
 		public:
 
-			RBT() : root(NULL) {}
+			RBT() : root(new Node<T>()) {}
 			void print() {
 				RBTiterator<T>	it = this->begin();
 				while (it != this->end())
@@ -80,19 +89,19 @@ namespace ft
 				}
 			}
 			RBTiterator<T> begin() {
-				if (!this->root)
+				if (!this->root || this->root->leaf())
 					return (RBTiterator<T>());
 				Node<T>*	node = this->root;
-				while (node->left)
+				while (!node->left->leaf())
 					node = node->left;
 				return (RBTiterator<T>(node));
 			}
 			RBTiterator<T> end() { return (RBTiterator<T>(NULL)); }
 			void left_rotate(Node<T>* x) {
-				if (!x || !x->right/* || !x->right->left*/)
+				if (!x || x->leaf() || x->right->leaf())
 					return ;
-				if (x->right->left)
-					x->right->left->parent = x;
+				//if (x->right->left)
+				x->right->left->parent = x;
 				x->right->parent = x->parent;
 				x->parent = x->right;
 				x->right = x->right->left;
@@ -105,10 +114,10 @@ namespace ft
 					this->root = x->parent;
 			}
 			void right_rotate(Node<T>* x) {
-				if (!x || !x->left/* || !x->left->right*/)
+				if (!x || x->leaf() || x->left->leaf())
 					return ;
-				if (x->left->right)
-					x->left->right->parent = x;
+				//if (x->left->right)
+				x->left->right->parent = x;
 				x->left->parent = x->parent;
 				x->parent = x->left;
 				x->left = x->left->right;
@@ -123,15 +132,17 @@ namespace ft
 			void insert(T x)
 			{
 				if (!root)
-				{
-					root = new Node<T>(x, false);
+					//root = new Node<T>(x, false);
 					return ;
+				if (root->leaf())
+				{
+					root->value = x;
+					root->left = new Node<T>(T(), false, root);
+					root->right = new Node<T>(T(), false, root);
 				}
 				Node<T>* node = root;
-				Node<T>* old;
-				while (node)
+				while (!node->leaf())
 				{
-					old = node;
 					if (x < node->value)
 						node = node->left;
 					else if (x > node->value)
@@ -139,16 +150,11 @@ namespace ft
 					else
 						return ;
 				}
-				if (x < old->value)
-				{
-					old->left = new Node<T>(x, true, old);
-					fix(old->left);
-				}
-				else
-				{
-					old->right = new Node<T>(x, true, old);
-					fix(old->right);
-				}
+				node->value = x;
+				node->red = true;
+				node->left = new Node<T>(T(), false, node);
+				node->right = new Node<T>(T(), false, node);
+				fix(node);
 			}
 			void erase(T x)
 			{
@@ -296,9 +302,9 @@ namespace ft
 
 			void fix(Node<T>* node)
 			{
-				if (node && node == root && node->red)
+				if (node && !node->leaf() && node == root && node->red)
 					node->red = false;
-				if (!node || !node->parent || !node->parent->parent || !node->red || !node->parent->red)
+				if (!node || node->leaf() || !node->parent || !node->parent->parent || !node->red || !node->parent->red)
 					return ;
 				else if ((node->parent->parent->left == node->parent && node->parent->parent->right && node->parent->parent->right->red)
 					|| (node->parent->parent->right == node->parent && node->parent->parent->left && node->parent->parent->left->red))
