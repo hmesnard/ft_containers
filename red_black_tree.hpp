@@ -129,82 +129,84 @@ namespace ft
 				else if (this->root == x)
 					this->root = x->parent;
 			}
-			void insert(T x)
+			void insert(T val)
 			{
 				if (!root)
 					//root = new Node<T>(x, false);
 					return ;
 				if (root->leaf())
 				{
-					root->value = x;
+					root->value = val;
 					root->left = new Node<T>(T(), false, root);
 					root->right = new Node<T>(T(), false, root);
 				}
 				Node<T>* node = root;
 				while (!node->leaf())
 				{
-					if (x < node->value)
+					if (val < node->value)
 						node = node->left;
-					else if (x > node->value)
+					else if (val > node->value)
 						node = node->right;
 					else
 						return ;
 				}
-				node->value = x;
+				node->value = val;
 				node->red = true;
 				node->left = new Node<T>(T(), false, node);
 				node->right = new Node<T>(T(), false, node);
 				fix(node);
 			}
-			void erase(T x)
+			void erase(T val)
 			{
 				Node<T>* node = root;
 				Node<T>* next;
-				Node<T>* xx;
+				Node<T>* x;
 				bool wasRed;
 
-				while (node)
+				if (!node)
+					return ;
+				while (!node->leaf())
 				{
-					if (x < node->value)
+					if (val < node->value)
 						node = node->left;
-					else if (x > node->value)
+					else if (val > node->value)
 						node = node->right;
 					else
 						break ;
 				}
-				if (!node)
+				if (node->leaf())
 					return ;
 				wasRed = node->red;
-				if (!node->left)
+				if (node->left->leaf())
 				{
-					xx = node->right;
-					next = xx;
+					x = node->right;
+					next = x;
 					if (node->parent && node->parent->left == node)
 						node->parent->left = node->right;
-					else if (node->parent && node->parent->right == node) //&& pas necessaire ?
+					else if (node->parent)
 						node->parent->right = node->right;
-					if (node->right)
-						node->right->parent = node->parent;
+					//if (node->right)
+					node->right->parent = node->parent;
 				}
-				else if (!node->right)
+				else if (node->right->leaf())
 				{
-					xx = node->left;
-					next = xx;
+					x = node->left;
+					next = x;
 					if (node->parent && node->parent->left == node)
 						node->parent->left = node->left;
-					else if (node->parent && node->parent->right == node) // && pas necessaire ?
+					else if (node->parent)
 						node->parent->right = node->left;
 					//if (node->left)
-						node->left->parent = node->parent;
+					node->left->parent = node->parent;
 				}
 				else
 				{
 					next = node->right;
-					while (next->left)
+					while (!next->left->leaf())
 						next = next->left;
-					xx = next->right;
-					if (next->right)
-						next->right->parent = next->parent;
+					x = next->right;
+					//if (next->right)
+					next->right->parent = next->parent;
 					if (next->parent->right == next)
 						next->parent->right = next->right;
 					else
@@ -217,25 +219,25 @@ namespace ft
 					next->parent = node->parent;
 					node->left->parent = next;
 					next->left = node->left;
-					if (node->right)
-						node->right->parent = next;
+					//if (node->right)
+					node->right->parent = next;
 					next->right = node->right;
 				}
 				if (node == this->root)
 					this->root = next;
 				delete(node);
 
-				if (wasRed && (!next || next->red))
+				if (wasRed && (next->leaf() || next->red))
 					;
 				else if (wasRed)
 				{
 					next->red = true;
-					fixdel(xx);
+					fixdel(x);
 				}
 				else if (next && next->red)
 					next->red = false;
-				else
-					fixdel(xx);
+				else if (x != this->root)
+					fixdel(x);
 			}
 
 		public://
@@ -275,7 +277,7 @@ namespace ft
 						return ;
 				}
 				else if ((node->parent->left == node && sibling->left->red && !sibling->right->red) ||
-						(node->parent->right == node && sibling->right->red && !sibling->left->red))
+						(node->parent->right == node && sibling->right->red && !sibling->left->red)) //node peut il etre root ici ???
 				{
 					sibling->right->red = false;
 					sibling->left->red = false;
@@ -284,14 +286,16 @@ namespace ft
 						right_rotate(sibling);
 					else
 						left_rotate(sibling);
-					fixdel(node);
+					fixdel(node); //put case 4 here??
 				}
 				else
 				{
 					sibling->red = node->parent->red;
 					node->parent->red = false;
-					sibling->right->red = false;
-					sibling->left->red = false;
+					if (node->parent->left == node)
+						sibling->right->red = false;
+					else
+						sibling->left->red = false;
 					if (node->parent->left == node)
 						left_rotate(node->parent);
 					else
