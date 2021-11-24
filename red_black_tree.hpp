@@ -22,9 +22,9 @@ namespace ft
 
 		bool	leaf() {
 			if (this->left && this->right)
-				return (true);
-			else if (!this->left && !this->right)
 				return (false);
+			else if (!this->left && !this->right)
+				return (true);
 			else
 				throw (std::string("Incorrect Node"));
 		}
