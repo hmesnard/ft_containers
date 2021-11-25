@@ -80,14 +80,37 @@ namespace ft
 		public:
 
 			RBT() : root(new Node<T>()) {}
-			void print() {
-				RBTiterator<T>	it = this->begin();
-				while (it != this->end())
-				{
-					std::cout << it.node->value << ((it.node->red) ? " RED" : " BLACK") << std::endl;
-					++it;
-				}
-			}
+void print() {
+RBTiterator<T>	it = this->begin();
+while (it != this->end())
+{
+std::cout << it.node->value << ((it.node->red) ? " RED" : " BLACK") << std::endl;
+++it;
+}
+}
+void printHelper(Node<T>* root, std::string indent, bool last) {
+// print the tree structure on the screen
+if (!root->leaf()) {
+std::cout<<indent;
+if (last) {
+std::cout<<"R----";
+indent += "     ";
+} else {
+std::cout<<"L----";
+indent += "|    ";
+}
+std::string sColor = root->red?"RED":"BLACK";
+std::cout<<root->value<<"("<<sColor<<")"<<std::endl;
+printHelper(root->left, indent, false);
+printHelper(root->right, indent, true);
+}
+// cout<<root->left->data<<endl;
+}
+void prettyPrint() {
+if (root) {
+printHelper(this->root, "", true);
+}
+}
 			RBTiterator<T> begin() {
 				if (!this->root || this->root->leaf())
 					return (RBTiterator<T>());
