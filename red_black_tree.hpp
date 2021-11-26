@@ -39,9 +39,9 @@ namespace ft
 			RBTiterator(Node<T>* node) : node(node) {}
 
 			RBTiterator & operator++() {
-				if (!this->node || this->node->leaf())
+				if (!this->node)
 					return (*this);
-				else if (!this->node->right->leaf())
+				else if (!this->node->leaf() && !this->node->right->leaf())
 				{
 					this->node = this->node->right;
 					std::cout << "R" << std::endl;
@@ -60,8 +60,19 @@ namespace ft
 						parent = parent->parent;
 						std::cout << "P" << std::endl;
 					}
-					this->node = parent;
-					std::cout << "P" << std::endl;
+					if (parent)
+					{
+						this->node = parent;
+						std::cout << "P" << std::endl;
+					}
+					else
+					{
+						while (this->node->right)
+						{
+							this->node = this->node->right;
+							std::cout << "R" << std::endl;
+						}
+					}
 				}
 				return (*this);
 			}
@@ -79,7 +90,7 @@ namespace ft
 	{
 		public:
 
-			RBT() : root(new Node<T>()) {}
+			RBT() : root(NULL) {}
 void print() {
 RBTiterator<T>	it = this->begin();
 while (it != this->end())
@@ -119,7 +130,12 @@ printHelper(this->root, "", true);
 					node = node->left;
 				return (RBTiterator<T>(node));
 			}
-			RBTiterator<T> end() { return (RBTiterator<T>(NULL)); }
+			RBTiterator<T> end() {
+				Node<T>*	node = this->root;
+				while (node->right)
+					node = node->right;
+				return (RBTiterator<T>(node));
+			}
 			void left_rotate(Node<T>* x) {
 				if (!x || x->leaf() || x->right->leaf())
 					return ;
@@ -155,8 +171,7 @@ printHelper(this->root, "", true);
 			void insert(T val)
 			{
 				if (!root)
-					//root = new Node<T>(x, false);
-					return ;
+					root = new Node<T>();
 				if (root->leaf())
 				{
 					root->value = val;

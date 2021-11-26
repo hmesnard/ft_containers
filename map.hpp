@@ -50,9 +50,19 @@ namespace ft
 			template <class InputIterator>
 			map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _alloc(alloc), _comp(comp), _tree(RBT<value_type>()) { this->insert(first, last); }
 			map (const map& x) { *this = x; }
-			~map() { }
+			~map() { this->clear(); }
 
+			map&	operator=(const map& x) {
+				this->clear();
+				this->insert(x.begin(), x.end());
+				return (*this);
+			}
 
+			iterator begin() { return (this->_tree.begin()); }
+			const_iterator begin() const { return (this->_tree.begin()); }
+			iterator end() { return (this->_tree.end()); }
+			const_iterator end() const { return (this->_tree.end()); }
+			reverse_iterator rbegin() { return (reverse_iterator()); }
 
 		private:
 
