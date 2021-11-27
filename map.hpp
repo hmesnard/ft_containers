@@ -6,7 +6,7 @@
 
 namespace ft
 {
-	template<class Key, class T, class Compare = std::less<Key>, class Alloc = allocator<ft::pair<const Key, T> > >
+	template<class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<ft::pair<const Key, T> > >
 	class map
 	{
 		public:
@@ -35,22 +35,22 @@ namespace ft
 			};
 
 			typedef Alloc											allocator_type;
-			typedef allocator_type::reference						reference;
-			typedef allocator_type::const_reference					const_reference;
-			typedef allocator_type::pointer							pointer;
-			typedef allocator_type::const_pointer					const_pointer;
+			typedef typename allocator_type::reference						reference;
+			typedef typename allocator_type::const_reference					const_reference;
+			typedef typename allocator_type::pointer							pointer;
+			typedef typename allocator_type::const_pointer					const_pointer;
 			typedef ft::RBTiterator<value_type>						iterator;
 			typedef ft::RBTiterator<const value_type>				const_iterator;
 			typedef ft::reverse_iterator<iterator>					reverse_iterator;
 			typedef ft::reverse_iterator<const_iterator>			const_reverse_iterator;
-			typedef ft::iterator_traits<iterator>::difference_type	difference_type;
-			typedef allocator_type::size_type						size_type;
+			typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
+			typedef typename allocator_type::size_type						size_type;
 
 			typedef ft::MapRBT<key_type, mapped_type, key_compare>	RBT;
 
-			explicit map(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _alloc(alloc), _comp(comp), _tree(RBT<value_type>()) {}
+			explicit map(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _alloc(alloc), _comp(comp), _tree(RBT()) {}
 			template <class InputIterator>
-			map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _alloc(alloc), _comp(comp), _tree(RBT<value_type>()) { this->insert(first, last); }
+			map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _alloc(alloc), _comp(comp), _tree(RBT()) { this->insert(first, last); }
 			map (const map& x) { *this = x; }
 			~map() { this->clear(); }
 
@@ -73,7 +73,7 @@ namespace ft
 			size_type	size() const { return (this->_tree.size()); }
 			size_type	max_size() const { return (this->_tree.max_size()); }
 
-			mapped_type&	operator[](const_kay_type& k) { return (this->_tree.brackets(k)); }
+			mapped_type&	operator[](const key_type& k) { return (this->_tree.brackets(k)); }
 
 			pair<iterator, bool> insert(const value_type& val) { return(this->_tree.insert(val)); }
 			iterator insert(iterator position, const value_type& val) {
@@ -85,11 +85,11 @@ namespace ft
 				for (; first != last; ++first)
 					this->_tree.insert(*first);
 			} //potentiel probleme ici si on insert depuis la map itself
-			void erase(iterator position) { this->_tree.erase(iterator->first); }
+			void erase(iterator position) { this->_tree.erase(position->first); }
 			size_type erase(const key_type& k) { return (this->_tree.erase(k) ? 1 : 0); }
 			void erase(iterator first, iterator last) {
 				for (; first != last; ++first)
-					this->_tree.erase(first);
+					this->erase(first);
 			}
 			void swap(map& x) { this->_tree.swap(x._tree); }
 			void clear() { this->erase(this->begin(), this->end()); }

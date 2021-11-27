@@ -2,6 +2,7 @@
 # define MAP_RED_BLACK_TREE_HPP
 
 #include <iostream>
+#include "utils.hpp"
 
 namespace ft
 {
@@ -9,8 +10,9 @@ namespace ft
 	struct Node
 	{
 		typedef Node * branch;
+		typedef ft::pair<Key, T>	value_type;
 
-		Node(T val = NULL, bool red = false, branch parent = NULL) : parent(parent), left(NULL), right(NULL), red(red), value(val) {}
+		Node(value_type val = value_type(), bool red = false, branch parent = NULL) : parent(parent), left(NULL), right(NULL), red(red), value(val) {}
 
 		branch	parent;
 		branch	left;
@@ -18,7 +20,7 @@ namespace ft
 
 		bool	red;
 
-		ft::pair<Key, T>*	value; //pointeur plutot ? DONE
+		value_type	value; //pointeur plutot ? DONE
 
 		bool	leaf() {
 			if (this->left && this->right)
@@ -31,61 +33,98 @@ namespace ft
 	};
 
 	template<class T>
-	class RBTiterator
+	class RBTiterator : public ft::iterator<std::bidirectional_iterator_tag, T>
 	{
 		public:
 
-			RBTiterator() : node(NULL) {}
-			RBTiterator(Node<T>* node) : node(node) {}
+			typedef  typename ft::iterator<std::bidirectional_iterator_tag, T>::value_type			value_type;
+			typedef  typename ft::iterator<std::bidirectional_iterator_tag, T>::difference_type		difference_type;
+			typedef  typename ft::iterator<std::bidirectional_iterator_tag, T>::pointer				pointer;
+			typedef  typename ft::iterator<std::bidirectional_iterator_tag, T>::reference			reference;
+			typedef  typename ft::iterator<std::bidirectional_iterator_tag, T>::iterator_category	iterator_category;
 
-			RBTiterator & operator++() {
-				if (!this->node)
-					return (*this);
-				else if (!this->node->leaf() && !this->node->right->leaf())
-				{
-					this->node = this->node->right;
-					std::cout << "R" << std::endl;
-					while (!this->node->left->leaf())
-					{
-						this->node = this->node->left;
-						std::cout << "L" << std::endl;
-					}
-				}
-				else
-				{
-					Node<T>*	parent = this->node->parent;
-					while (parent && parent->right == this->node)
-					{
-						this->node = parent;
-						parent = parent->parent;
-						std::cout << "P" << std::endl;
-					}
-					if (parent)
-					{
-						this->node = parent;
-						std::cout << "P" << std::endl;
-					}
-					else
-					{
-						while (this->node->right)
-						{
-							this->node = this->node->right;
-							std::cout << "R" << std::endl;
-						}
-					}
-				}
+			typedef	typename value_type::first_type		key_type;
+			typedef	typename value_type::second_type	mapped_type;
+			typedef Node<const key_type, mapped_type>	Node;
+
+			RBTiterator() : node(NULL) {}
+			RBTiterator(const RBTiterator& src) : node(src.node) {}
+			RBTiterator(Node* node) : node(node) {}
+			virtual ~RBTiterator() {}
+
+			operator RBTiterator<T const>() const { return (RBTiterator<T const>(this->node)); }
+
+			RBTiterator&	operator=(const RBTiterator& rhs) {
+				this->node = rhs.node;
 				return (*this);
 			}
 
 			bool operator==(const RBTiterator & rhs) const { return (this->node == rhs.node); }
 			bool operator!=(const RBTiterator & rhs) const { return (this->node != rhs.node); }
 
-		public://
+			reference	operator*() const { return (this->node->value); }
+			pointer		operator->() const { return (&(this->node->value)); }
 
-			Node<T>*	node;
+			RBTiterator& operator++() {
+				if (!this->node)
+					return (*this);
+				else if (!this->node->leaf() && !this->node->right->leaf())
+				{
+					this->node = this->node->right;
+					while (!this->node->left->leaf())
+						this->node = this->node->left;
+				}
+				else
+				{
+					while (this->node->parent && this->node->parent->right == this->node)
+						this->node = this->node->parent;
+					if (this->node->parent)
+						this->node = this->node->parent;
+					else
+						while (this->node->right)
+							this->node = this->node->right;
+				}
+				return (*this);
+			}
+			RBTiterator&	operator++(int) {
+				RBTiterator	res = *this;
+				++*this;
+				return (res);
+			}
+
+			RBTiterator&	operator--() {
+				if (!this->node)
+					return (*this);
+				else if (!this->node->leaf() && !this->node->left->leaf())
+				{
+					this->node = this->node->left;
+					while (!this->node->right->leaf())
+						this->node = this->node->right;
+				}
+				else
+				{
+					while (this->node->parent && this->node->parent->left == this->node)
+						this->node = this->node->parent;
+					if (this->node->parent)
+						this->node = this->node->parent;
+					else
+						while (this->node->left)
+							this->node = this->node->left;
+				}
+				return (*this);
+			}
+			RBTiterator&	operator--(int) {
+				RBTiterator	res = *this;
+				--*this;
+				return (res);
+			}
+
+		private:
+
+			Node*	node;
 	};
 
-	template<class Key, class T, class Compare, class Node = Node<Key, T>, class Alloc = std::allocator<Node> >
+	template<class Key, class T, class Compare, class Node = Node<const Key, T>, class Alloc = std::allocator<Node> >
 	class MapRBT
 	{
 		public:
@@ -95,17 +134,17 @@ namespace ft
 			typedef ft::pair<const key_type, mapped_type>			value_type;
 			typedef Compare		key_compare;
 			typedef Alloc		allocator_type;
-			typedef iterator	RBTiterator<value_type>				iterator;
-			typedef allocator_type::size_type						size_type;
+			typedef RBTiterator<value_type>				iterator;
+			typedef typename allocator_type::size_type				size_type;
 
-			RBT(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _root(NULL), _alloc(alloc), _comp(comp) {}
+			MapRBT(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _root(NULL), _alloc(alloc), _comp(comp) {}
 			iterator	begin() {
 				if (!this->_root || this->_root->leaf())
-					return (RBTiterator<T>());
+					return (iterator());
 				Node*	node = this->_root;
 				while (!node->left->leaf())
 					node = node->left;
-				return (RBTiterator<T>(node));
+				return (iterator(node));
 			}
 			iterator	end() {
 				Node*	node = this->_root;
@@ -113,7 +152,7 @@ namespace ft
 					return (iterator());
 				while (node->right)
 					node = node->right;
-				return (RBTiterator<T>(node));
+				return (iterator(node));
 			}
 
 			bool empty() const { return (!this->_root || this->_root->leaf()); }
@@ -158,7 +197,7 @@ namespace ft
 				else if (this->_root == x)
 					this->_root = x->parent;
 			}
-			pair<iterator, bool>	insert(T val)
+			pair<iterator, bool>	insert(value_type val)
 			{
 				if (!this->_root)
 				{
@@ -171,10 +210,10 @@ namespace ft
 					this->_root->value = val;
 					//root->left = new Node(T(), false, root);
 					this->_root->left = this->_alloc.allocate(1);
-					this->_alloc.construct(_root->left, Node(T(), false, this->_root));
+					this->_alloc.construct(_root->left, Node(value_type(), false, this->_root));
 					//root->right = new Node(T(), false, root);
 					this->_root->right = this->_alloc.allocate(1);
-					this->_alloc.construct(_root->right, Node(T(), false, this->_root));
+					this->_alloc.construct(_root->right, Node(value_type(), false, this->_root));
 				}
 				Node* node = this->_root;
 				while (!node->leaf())
@@ -190,10 +229,10 @@ namespace ft
 				node->red = true;
 				//node->left = new Node<T>(T(), false, node);
 				node->left = this->_alloc.allocate(1);
-				this->_alloc.construct(node->left, Node(T(), false, node));
+				this->_alloc.construct(node->left, Node(value_type(), false, node));
 				//node->right = new Node<T>(T(), false, node);
 				node->left = this->_alloc.allocate(1);
-				this->_alloc.construct(node->left, Node(T(), false, node));
+				this->_alloc.construct(node->left, Node(value_type(), false, node));
 				fix(node);
 				return (ft::make_pair(iterator(node), true));
 			}
@@ -287,7 +326,7 @@ namespace ft
 					if (it->first == k)
 						return(it->second);
 				}
-				return (this->insert(ft::make_pair(k, mapped_type()).first->second));
+				return (this->insert(ft::make_pair(k, mapped_type())).first->second);
 			}
 			void	swap(MapRBT& x)
 			{
@@ -299,7 +338,7 @@ namespace ft
 				Node*	node = this->_root;
 
 				if (!node)
-					return (iterator());
+					return (this->end());
 				while (!node->leaf())
 				{
 					if (this->_comp(k, node->value.first))
@@ -310,7 +349,7 @@ namespace ft
 						break ;
 				}
 				if (node->leaf())
-					return (iterator());
+					return (this->end());
 				return (iterator(node));
 			}
 			bool exist(const key_type& k) {
@@ -335,7 +374,7 @@ namespace ft
 				Node*	node = this->_root;
 
 				if (!node)
-					return (iterator());
+					return (this->end());
 				while (!node->leaf())
 				{
 					if (!this->_comp(node->value.first, k))
@@ -354,7 +393,7 @@ namespace ft
 				Node*	node = this->_root;
 
 				if (!node)
-					return (iterator()); //this->end() partout a la place de ca
+					return (this->end()); //this->end() partout a la place de ca
 				while (!node->leaf())
 				{
 					if (this->_comp(k, node->value.first))
@@ -438,7 +477,7 @@ namespace ft
 
 			void fix(Node* node)
 			{
-				if (node && !node->leaf() && node == root && node->red)
+				if (node && !node->leaf() && node == _root && node->red)
 					node->red = false;
 				if (!node || node->leaf() || !node->parent || !node->parent->parent || !node->red || !node->parent->red)
 					return ;
