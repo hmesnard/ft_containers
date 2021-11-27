@@ -94,57 +94,38 @@ namespace ft
 			typedef T			mapped_type;
 			typedef ft::pair<const key_type, mapped_type>			value_type;
 			typedef Compare		key_compare;
-			typedef Alloc		allocator;
+			typedef Alloc		allocator_type;
 			typedef iterator	RBTiterator<value_type>				iterator;
+			typedef allocator_type::size_type						size_type;
 
-			RBT() : root(NULL) {}
-/*void print() {
-RBTiterator<T>	it = this->begin();
-while (it != this->end())
-{
-std::cout << it.node->value << ((it.node->red) ? " RED" : " BLACK") << std::endl;
-++it;
-}
-}
-void printHelper(Node<T>* root, std::string indent, bool last) {
-// print the tree structure on the screen
-if (!root->leaf()) {
-std::cout<<indent;
-if (last) {
-std::cout<<"R----";
-indent += "     ";
-} else {
-std::cout<<"L----";
-indent += "|    ";
-}
-std::string sColor = root->red?"RED":"BLACK";
-std::cout<<root->value<<"("<<sColor<<")"<<std::endl;
-printHelper(root->left, indent, false);
-printHelper(root->right, indent, true);
-}
-// cout<<root->left->data<<endl;
-}
-void prettyPrint() {
-if (root) {
-printHelper(this->root, "", true);
-}
-}*/
-			RBTiterator<T> begin() {
-				if (!this->root || this->root->leaf())
+			RBT(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _root(NULL), _alloc(alloc), _comp(comp) {}
+			iterator	begin() {
+				if (!this->_root || this->_root->leaf())
 					return (RBTiterator<T>());
-				Node*	node = this->root;
+				Node*	node = this->_root;
 				while (!node->left->leaf())
 					node = node->left;
 				return (RBTiterator<T>(node));
 			}
-			RBTiterator<T> end() {
-				Node*	node = this->root;
-				if (!this->root || this->root->leaf())
+			iterator	end() {
+				Node*	node = this->_root;
+				if (!this->_root || this->_root->leaf())
 					return (iterator());
 				while (node->right)
 					node = node->right;
 				return (RBTiterator<T>(node));
 			}
+
+			bool empty() const { return (!this->_root || this->_root->leaf()); }
+			size_type size() const {
+				size_type	res = 0;
+
+				for (iterator it = this->begin(); it != this->end(); ++it)
+					++res;
+				return (res);
+			}
+			size_type max_size() const { return (this->_alloc.max_size()); }
+
 			void left_rotate(Node* x) {
 				if (!x || x->leaf() || x->right->leaf())
 					return ;
@@ -158,8 +139,8 @@ printHelper(this->root, "", true);
 					x->parent->parent->left = x->parent;
 				else if (x->parent->parent && x->parent->parent->right == x)
 					x->parent->parent->right = x->parent;
-				else if (this->root == x)
-					this->root = x->parent;
+				else if (this->_root == x)
+					this->_root = x->parent;
 			}
 			void right_rotate(Node* x) {
 				if (!x || x->leaf() || x->left->leaf())
@@ -174,28 +155,28 @@ printHelper(this->root, "", true);
 					x->parent->parent->left = x->parent;
 				else if (x->parent->parent && x->parent->parent->right == x)
 					x->parent->parent->right = x->parent;
-				else if (this->root == x)
-					this->root = x->parent;
+				else if (this->_root == x)
+					this->_root = x->parent;
 			}
 			pair<iterator, bool>	insert(T val)
 			{
-				if (!root)
+				if (!this->_root)
 				{
 					//root = new Node();
-					root = this->alloc.allocate(1);
-					this->alloc.construct(root, Node());
+					this->_root = this->_alloc.allocate(1);
+					this->_alloc.construct(_root, Node());
 				}
-				if (root->leaf())
+				if (_root->leaf())
 				{
-					root->value = val;
+					this->_root->value = val;
 					//root->left = new Node(T(), false, root);
-					root->left = this->alloc.allocate(1);
-					this->alloc.construct(root->left, Node(T(), false, root));
+					this->_root->left = this->_alloc.allocate(1);
+					this->_alloc.construct(_root->left, Node(T(), false, this->_root));
 					//root->right = new Node(T(), false, root);
-					root->right = this->alloc.allocate(1);
-					this->alloc.construct(root->right, Node(T(), false, root));
+					this->_root->right = this->_alloc.allocate(1);
+					this->_alloc.construct(_root->right, Node(T(), false, this->_root));
 				}
-				Node* node = root;
+				Node* node = this->_root;
 				while (!node->leaf())
 				{
 					if (val.first < node->value.first)
@@ -208,17 +189,17 @@ printHelper(this->root, "", true);
 				node->value = val;
 				node->red = true;
 				//node->left = new Node<T>(T(), false, node);
-				node->left = this->alloc.allocate(1);
-				this->alloc.construct(node->left, Node(T(), false, node));
+				node->left = this->_alloc.allocate(1);
+				this->_alloc.construct(node->left, Node(T(), false, node));
 				//node->right = new Node<T>(T(), false, node);
-				node->left = this->alloc.allocate(1);
-				this->alloc.construct(node->left, Node(T(), false, node));
+				node->left = this->_alloc.allocate(1);
+				this->_alloc.construct(node->left, Node(T(), false, node));
 				fix(node);
 				return (ft::make_pair(iterator(node), true));
 			}
 			bool erase(const key_type& k)
 			{
-				Node* node = this->root;
+				Node* node = this->_root;
 				Node* next;
 				Node* x;
 				bool wasRed;
@@ -283,8 +264,8 @@ printHelper(this->root, "", true);
 					node->right->parent = next;
 					next->right = node->right;
 				}
-				if (node == this->root)
-					this->root = next;
+				if (node == this->_root)
+					this->_root = next;
 				delete(node);
 
 				if (wasRed && (next->leaf() || next->red))
@@ -296,7 +277,7 @@ printHelper(this->root, "", true);
 				}
 				else if (next && next->red)
 					next->red = false;
-				else if (x != this->root)
+				else if (x != this->_root)
 					fixdel(x);
 				return (true);
 			}
@@ -310,20 +291,20 @@ printHelper(this->root, "", true);
 			}
 			void	swap(MapRBT& x)
 			{
-				Node*	temp = this->root;
-				this->root = x.root;
-				x.root = temp;
+				Node*	temp = this->_root;
+				this->_root = x._root;
+				x._root = temp;
 			}
 			iterator find(const key_type& k) {
-				Node*	node = this->root;
+				Node*	node = this->_root;
 
 				if (!node)
 					return (iterator());
 				while (!node->leaf())
 				{
-					if (this->comp(k, node->value.first))
+					if (this->_comp(k, node->value.first))
 						node = node->left;
-					else if (this->comp(node->value.first, k))
+					else if (this->_comp(node->value.first, k))
 						node = node->right;
 					else
 						break ;
@@ -333,15 +314,15 @@ printHelper(this->root, "", true);
 				return (iterator(node));
 			}
 			bool exist(const key_type& k) {
-				Node*	node = this->root;
+				Node*	node = this->_root;
 
 				if (!node)
 					return (false);
 				while (!node->leaf())
 				{
-					if (this->comp(k, node->value.first))
+					if (this->_comp(k, node->value.first))
 						node = node->left;
-					else if (this->comp(node->value.first, k))
+					else if (this->_comp(node->value.first, k))
 						node = node->right;
 					else
 						break ;
@@ -351,29 +332,49 @@ printHelper(this->root, "", true);
 				return (true);
 			}
 			iterator lower_bound(const key_type& k) {
-				Node*	node = this->root;
+				Node*	node = this->_root;
 
 				if (!node)
 					return (iterator());
 				while (!node->leaf())
 				{
-					if (this->comp(k, node->value.first))
+					if (!this->_comp(node->value.first, k))
 						node = node->left;
-					else if (this->comp(node->value.first, k))
-						node = node->right;
 					else
-						break ;
+						node = node->right;
 				}
-				if (node->leaf())
-					return (iterator());
-				return (iterator(node));
+				if (!node->parent)
+					return (this->end());
+				else if (node->parent->left == node)
+					return (iterator(node->parent));
+				else
+					return (++iterator(node->parent));
+			}
+			iterator upper_bound(const key_type& k) {
+				Node*	node = this->_root;
+
+				if (!node)
+					return (iterator()); //this->end() partout a la place de ca
+				while (!node->leaf())
+				{
+					if (this->_comp(k, node->value.first))
+						node = node->left;
+					else
+						node = node->right;
+				}
+				if (!node->parent)
+					return (this->end());
+				else if (node->parent->left == node)
+					return (iterator(node->parent));
+				else
+					return (++iterator(node->parent));
 			}
 
 		private:
 
-			Node*		root;
-			allocator	alloc;
-			key_compare	comp;
+			Node*			_root;
+			allocator_type	_alloc;
+			key_compare		_comp;
 			void fixdel(Node* node)
 			{
 				Node* sibling = (node->parent->left == node) ? node->parent->right : node->parent->left;

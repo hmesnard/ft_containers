@@ -102,6 +102,12 @@ namespace ft
 			size_type count(const key_type& k) const { return(this->_tree.exist(k) ? 1 : 0); }
 			iterator lower_bound(const key_type& k) { return (this->_tree.lower_bound(k)); }
 			const_iterator lower_bound(const key_type& k) const { return (this->_tree.lower_bound(k)); }
+			iterator upper_bound(const key_type& k) { return (this->_tree.upper_bound(k)); }
+			const_iterator upper_bound(const key_type& k) const { return (this->_tree.upper_bound(k)); }
+			pair<iterator, iterator> equal_range(const key_type& k) { return (ft::make_pair(this->lower_bound(k), this->upper_bound(k))); }
+			pair<const_iterator, const_iterator> equal_range(const key_type& k) const { return (ft::make_pair(this->lower_bound(k), this->upper_bound(k))); }
+
+			allocator_type get_allocator() const { return (this->_alloc); }
 
 		private:
 
