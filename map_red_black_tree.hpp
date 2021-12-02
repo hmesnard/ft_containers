@@ -20,7 +20,7 @@ namespace ft
 
 		bool	red;
 
-		value_type	value; //pointeur plutot ? DONE
+		value_type	value; //pointeur plutot ? DONE UNDONE
 
 		bool	leaf() {
 			if (this->left && this->right)
@@ -86,7 +86,7 @@ namespace ft
 				}
 				return (*this);
 			}
-			RBTiterator&	operator++(int) {
+			RBTiterator	operator++(int) {
 				RBTiterator	res = *this;
 				++*this;
 				return (res);
@@ -113,7 +113,7 @@ namespace ft
 				}
 				return (*this);
 			}
-			RBTiterator&	operator--(int) {
+			RBTiterator	operator--(int) {
 				RBTiterator	res = *this;
 				--*this;
 				return (res);
@@ -203,17 +203,15 @@ namespace ft
 				{
 					//root = new Node();
 					this->_root = this->_alloc.allocate(1);
-					this->_alloc.construct(_root, Node());
-				}
-				if (_root->leaf())
-				{
-					this->_root->value = val;
+					this->_alloc.construct(_root, Node(val));
+					//this->_root->value = val;
 					//root->left = new Node(T(), false, root);
 					this->_root->left = this->_alloc.allocate(1);
 					this->_alloc.construct(_root->left, Node(value_type(), false, this->_root));
 					//root->right = new Node(T(), false, root);
 					this->_root->right = this->_alloc.allocate(1);
 					this->_alloc.construct(_root->right, Node(value_type(), false, this->_root));
+					return (ft::make_pair(iterator(this->_root), true));
 				}
 				Node* node = this->_root;
 				while (!node->leaf())
@@ -225,14 +223,17 @@ namespace ft
 					else
 						return (ft::make_pair(iterator(node), false));
 				}
-				node->value = val;
-				node->red = true;
+				//node->value = val;
+				//node->red = true;
+				Node* parent = node->parent;
+				this->_alloc.destroy(node);
+				this->_alloc.construct(node, Node(val, true, parent));
 				//node->left = new Node<T>(T(), false, node);
 				node->left = this->_alloc.allocate(1);
 				this->_alloc.construct(node->left, Node(value_type(), false, node));
 				//node->right = new Node<T>(T(), false, node);
-				node->left = this->_alloc.allocate(1);
-				this->_alloc.construct(node->left, Node(value_type(), false, node));
+				node->right = this->_alloc.allocate(1);
+				this->_alloc.construct(node->right, Node(value_type(), false, node));
 				fix(node);
 				return (ft::make_pair(iterator(node), true));
 			}
