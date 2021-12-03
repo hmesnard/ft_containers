@@ -26,45 +26,45 @@ namespace ft
 
 			void pop() { this->c.pop_back(); }
 
-			template<class T, class Container>
-			friend bool operator==(const stack<T, Container>& lhs, const stack<T, Container>& rhs);
+			template<class U, class C>
+			friend bool operator==(const stack<U, C>& lhs, const stack<U, C>& rhs);
 
-			template<class T, class Container>
-			friend bool operator!=(const stack<T, Container>& lhs, const stack<T, Container>& rhs);
+			template<class U, class C>
+			friend bool operator!=(const stack<U, C>& lhs, const stack<U, C>& rhs);
 
-			template<class T, class Container>
-			friend bool operator<(const stack<T, Container>& lhs, const stack<T, Container>& rhs);
+			template<class U, class C>
+			friend bool operator<(const stack<U, C>& lhs, const stack<U, C>& rhs);
 
-			template<class T, class Container>
-			friend bool operator<=(const stack<T, Container>& lhs, const stack<T, Container>& rhs);
+			template<class U, class C>
+			friend bool operator<=(const stack<U, C>& lhs, const stack<U, C>& rhs);
 
-			template<class T, class Container>
-			friend bool operator>(const stack<T, Container>& lhs, const stack<T, Container>& rhs);
+			template<class U, class C>
+			friend bool operator>(const stack<U, C>& lhs, const stack<U, C>& rhs);
 
-			template<class T, class Container>
-			friend bool operator>=(const stack<T, Container>& lhs, const stack<T, Container>& rhs);
+			template<class U, class C>
+			friend bool operator>=(const stack<U, C>& lhs, const stack<U, C>& rhs);
 
 		protected:
 			container_type	c;
 	};
 
-	template<class T, class Container>
-	bool operator==(const stack<T, Container>& lhs, const stack<T, Container>& rhs) { return (lhs.c == rhs.c); }
+	template<class U, class C>
+	bool operator==(const stack<U, C>& lhs, const stack<U, C>& rhs) { return (lhs.c == rhs.c); }
 
-	template<class T, class Container>
-	bool operator!=(const stack<T, Container>& lhs, const stack<T, Container>& rhs) { return (lhs.c != rhs.c); }
+	template<class U, class C>
+	bool operator!=(const stack<U, C>& lhs, const stack<U, C>& rhs) { return (lhs.c != rhs.c); }
 
-	template<class T, class Container>
-	bool operator<(const stack<T, Container>& lhs, const stack<T, Container>& rhs) { return (lhs.c < rhs.c); }
+	template<class U, class C>
+	bool operator<(const stack<U, C>& lhs, const stack<U, C>& rhs) { return (lhs.c < rhs.c); }
 
-	template<class T, class Container>
-	bool operator<=(const stack<T, Container>& lhs, const stack<T, Container>& rhs) { return (lhs.c <= rhs.c); }
+	template<class U, class C>
+	bool operator<=(const stack<U, C>& lhs, const stack<U, C>& rhs) { return (lhs.c <= rhs.c); }
 
-	template<class T, class Container>
-	bool operator>(const stack<T, Container>& lhs, const stack<T, Container>& rhs) { return (lhs.c > rhs.c); }
+	template<class U, class C>
+	bool operator>(const stack<U, C>& lhs, const stack<U, C>& rhs) { return (lhs.c > rhs.c); }
 
-	template<class T, class Container>
-	bool operator>=(const stack<T, Container>& lhs, const stack<T, Container>& rhs) { return (lhs.c >= rhs.c); }
+	template<class U, class C>
+	bool operator>=(const stack<U, C>& lhs, const stack<U, C>& rhs) { return (lhs.c >= rhs.c); }
 }
 
 //vu qu'on peut mettre rajouter friend au prototype de cplusplus, adapter a vector et autres

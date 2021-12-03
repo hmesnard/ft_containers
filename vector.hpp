@@ -54,7 +54,7 @@ namespace ft
 			reference	operator[](difference_type n) const { return (*(this->ptr + n)); }
 
 			Viterator &	operator++() {
-				ptr++;
+				++ptr;
 				return (*this);
 			}
 			Viterator		operator++(int) {
@@ -63,7 +63,7 @@ namespace ft
 				return (ret);
 			}
 			Viterator &	operator--() {
-				ptr--;
+				--ptr;
 				return (*this);
 			}
 			Viterator		operator--(int) {
@@ -169,10 +169,10 @@ namespace ft
 				else if (n > this->_capacity)
 					this->reserve(this->_capacity * 2);
 				if (n > this->_size)
-					for (size_type i = this->_size; i < n; i++)
+					for (size_type i = this->_size; i < n; ++i)
 						this->_alloc.construct(this->_begin + i, val);
 				else
-					for (size_type i = n; i < this->_size; i++)
+					for (size_type i = n; i < this->_size; ++i)
 						this->_alloc.destroy(this->_begin + i);
 				this->_size = n;
 			}
@@ -182,7 +182,7 @@ namespace ft
 				if (n > this->_capacity)
 				{
 					pointer	tmp = this->_alloc.allocate(n);
-					for(size_type i = 0; i < this->_size; i++)
+					for(size_type i = 0; i < this->_size; ++i)
 					{
 						this->_alloc.construct(tmp + i, this->_begin[i]);
 						this->_alloc.destroy(this->_begin + i);
@@ -215,16 +215,16 @@ namespace ft
 				this->resize(0);
 				this->resize(static_cast<size_type>(last - first));
 				InputIterator it2 = first;
-				for(iterator it1 = this->begin(); it2 != last; it1++)
+				for(iterator it1 = this->begin(); it2 != last; ++it1)
 				{
 					this->_alloc.construct(&(*it1), *it2);
-					it2++;
+					++it2;
 				}
 			}
 			void assign(size_type n, const value_type& val) {
 				this->resize(0);
 				this->resize(n);
-				for(iterator it = this->begin(); it != this->end(); it++)
+				for(iterator it = this->begin(); it != this->end(); ++it)
 					this->_alloc.construct(&(*it), val);
 			}
 			void push_back(const value_type& val) { this->resize(this->_size + 1, val); }
@@ -240,12 +240,12 @@ namespace ft
 				else if (this->_size + n > this->_capacity)
 					this->reserve(this->_capacity * 2);
 				position = this->begin() + pos;
-				for(reverse_iterator rit = this->rbegin(); rit != this->rend(); rit++)
+				for(reverse_iterator rit = this->rbegin(); rit != this->rend(); ++rit)
 				{
 					this->_alloc.construct(&(*(rit)) + n, *rit);
 					this->_alloc.destroy(&(*rit));
 				}
-				for(size_type i = 0; i < n; i++)
+				for(size_type i = 0; i < n; ++i)
 					this->_alloc.construct(&(*position) + i, val);
 				this->_size += n;
 			}
@@ -258,20 +258,20 @@ namespace ft
 				else if (this->_size + n > this->_capacity)
 					this->reserve(this->_capacity * 2);
 				position = this->begin() + pos;
-				for(reverse_iterator rit = this->rbegin(); rit != this->rend(); rit++)
+				for(reverse_iterator rit = this->rbegin(); rit != this->rend(); ++rit)
 				{
 					this->_alloc.construct(&(*rit) + n, *rit);
 					this->_alloc.destroy(&(*rit));
 				}
-				for(InputIterator it = first; it != last; it++)
+				for(InputIterator it = first; it != last; ++it)
 					this->_alloc.construct(&(*position) + static_cast<size_type>(it - first), *it);
 				this->_size += n;
 			}
 			iterator erase(iterator position) { return (this->erase(position, position + 1)); }
 			iterator erase(iterator first, iterator last) {
-				for(iterator it = first; it != last; it++)
+				for(iterator it = first; it != last; ++it)
 					this->_alloc.destroy(&(*it));
-				for(iterator it = last; it != this->end(); it++)
+				for(iterator it = last; it != this->end(); ++it)
 				{
 					this->_alloc.construct(first + static_cast<size_type>(it - last), *it);
 					this->_alloc.destroy(&(*it));

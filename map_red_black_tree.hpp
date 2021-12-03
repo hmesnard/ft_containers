@@ -138,7 +138,7 @@ namespace ft
 			typedef typename allocator_type::size_type				size_type;
 
 			MapRBT(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _root(NULL), _alloc(alloc), _comp(comp) {}
-			iterator	begin() {
+			iterator	begin() const {
 				if (!this->_root || this->_root->leaf())
 					return (iterator());
 				Node*	node = this->_root;
@@ -146,7 +146,7 @@ namespace ft
 					node = node->left;
 				return (iterator(node));
 			}
-			iterator	end() {
+			iterator	end() const {
 				Node*	node = this->_root;
 				if (!this->_root || this->_root->leaf())
 					return (iterator());
@@ -371,7 +371,7 @@ namespace ft
 					return (false);
 				return (true);
 			}
-			iterator lower_bound(const key_type& k) {
+			iterator lower_bound(const key_type& k) const {
 				Node*	node = this->_root;
 
 				if (!node)
@@ -390,7 +390,7 @@ namespace ft
 				else
 					return (++iterator(node->parent));
 			}
-			iterator upper_bound(const key_type& k) {
+			iterator upper_bound(const key_type& k) const {
 				Node*	node = this->_root;
 
 				if (!node)

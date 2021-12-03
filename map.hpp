@@ -82,15 +82,27 @@ namespace ft
 			}
 			template<class InputIterator>
 			void insert(InputIterator first, InputIterator last) {
-				for (; first != last; ++first)
-					this->_tree.insert(*first);
+				/*for (; first != last; ++first)
+					this->_tree.insert(*first);*/
+				while (first != last)
+				{
+					InputIterator it = first;
+					++first;
+					this->_tree.insert(*it);
+				}
 			} //potentiel probleme ici si on insert depuis la map itself
 			void erase(iterator position) { this->_tree.erase(position->first); }
 			size_type erase(const key_type& k) { return (this->_tree.erase(k) ? 1 : 0); }
 			void erase(iterator first, iterator last) {
-				for (; first != last; ++first)
-					this->erase(first);
-			}
+				/*for (; first != last; ++first)
+					this->erase(first);*/
+				while (first != last)
+				{
+					iterator it = first;
+					++first;
+					this->erase(it);
+				}
+			} //ca buguait sous ubuntu
 			void swap(map& x) { this->_tree.swap(x._tree); }
 			void clear() { this->erase(this->begin(), this->end()); }
 

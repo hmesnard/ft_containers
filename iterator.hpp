@@ -2,6 +2,7 @@
 # define ITERATOR_HPP
 
 #include <cstddef>
+#include <iostream>
 
 namespace ft
 {
@@ -14,7 +15,7 @@ namespace ft
 		typedef Reference reference;
 		typedef Category  iterator_category;
 	};
-
+	//remettre les iterator tags
 	template<class Iterator>
 	class iterator_traits
 	{
