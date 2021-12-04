@@ -74,7 +74,8 @@ namespace ft
 
 			Viterator		operator+(difference_type n) const {
 				Viterator	ret = *this;
-				ret.ptr += n;
+				//std::cout << ret.ptr << std::endl;
+				ret.ptr += n; //pas de souci quand ptr est null ??? _vitest.cpp
 				return (ret);
 			}
 			//friend Viterator	operator+(difference_type n, Viterator const & rhs) { return (rhs.operator+(n)); } //bonne maniere d'implementer cet overload ?
@@ -245,13 +246,18 @@ namespace ft
 				else if (this->_size + n > this->_capacity)
 					this->reserve(this->_capacity * 2);
 				position = this->begin() + pos;
-				for(reverse_iterator rit = this->rbegin(); rit != this->rend(); ++rit)
+				vector	v(position, this->end());
+				for(iterator it = position; it != this->end(); ++it)
+					this->_alloc.destroy(&(*it));
+				/*for(reverse_iterator rit = this->rbegin(); rit != this->rend(); ++rit)
 				{
 					this->_alloc.construct(&(*(rit)) + n, *rit);
 					this->_alloc.destroy(&(*rit));
-				}
+				}*/
 				for(size_type i = 0; i < n; ++i)
-					this->_alloc.construct(&(*position) + i, val);
+					this->_alloc.construct(&(*(position++)), val);
+				for(iterator it = v.begin(); it != v.end(); ++it)
+					this->_alloc.construct(&(*(position++)), *it);
 				this->_size += n;
 			}
 			template<class InputIterator>
@@ -266,13 +272,18 @@ namespace ft
 				else if (this->_size + n > this->_capacity)
 					this->reserve(this->_capacity * 2);
 				position = this->begin() + pos;
-				for(reverse_iterator rit = this->rbegin(); rit != this->rend(); ++rit)
+				vector	v(position, this->end());
+				for(iterator it = position; it != this->end(); ++it)
+					this->_alloc.destroy(&(*it));
+				/*for(reverse_iterator rit = this->rbegin(); rit != this->rend(); ++rit)
 				{
 					this->_alloc.construct(&(*rit) + n, *rit);
 					this->_alloc.destroy(&(*rit));
-				}
+				}*/
 				for(InputIterator it = first; it != last; ++it)
 					this->_alloc.construct(&(*(position++))/* + static_cast<size_type>(it - first)*/, *it);
+				for(iterator it = v.begin(); it != v.end(); ++it)
+					this->_alloc.construct(&(*(position++)), *it);
 				this->_size += n;
 			}
 			iterator erase(iterator position) { return (this->erase(position, position + 1)); }
