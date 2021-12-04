@@ -335,7 +335,7 @@ namespace ft
 				this->_root = x._root;
 				x._root = temp;
 			}
-			iterator find(const key_type& k) {
+			iterator find(const key_type& k) const {
 				Node*	node = this->_root;
 
 				if (!node)
@@ -353,7 +353,7 @@ namespace ft
 					return (this->end());
 				return (iterator(node));
 			}
-			bool exist(const key_type& k) {
+			bool exist(const key_type& k) const {
 				Node*	node = this->_root;
 
 				if (!node)

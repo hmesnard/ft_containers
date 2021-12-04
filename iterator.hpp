@@ -70,7 +70,7 @@ namespace ft
 			iterator_type	base() const { return (this->_base); }
 
 			reference	operator*() const { return (*(_base - 1)); }
-			pointer		operator->() const { return (_base - 1); } //test ca
+			pointer		operator->() const { return (&(*(_base - 1))); } //test ca
 			reference	operator[](difference_type n) const { return (*(_base - (n + 1))); }
 
 			reverse_iterator &	operator++() {
