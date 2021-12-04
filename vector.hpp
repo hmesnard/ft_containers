@@ -213,7 +213,12 @@ namespace ft
 			template<class InputIterator>
 			void assign(InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = NULL) {
 				this->resize(0);
-				this->resize(static_cast<size_type>(last - first));
+				//this->resize(static_cast<size_type>(last - first));
+				size_type		n = 0;
+				InputIterator	tmp = first;
+				while (tmp++ != last)
+					++n;
+				this->resize(n);
 				InputIterator it2 = first;
 				for(iterator it1 = this->begin(); it2 != last; ++it1)
 				{
@@ -251,7 +256,10 @@ namespace ft
 			}
 			template<class InputIterator>
 			void insert(iterator position, InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = NULL) {
-				size_type	n = static_cast<size_type>(last - first);
+				size_type	n = 0;//static_cast<size_type>(last - first);
+				InputIterator	tmp = first;
+				while (tmp++ != last)
+					++n;
 				size_type	pos = static_cast<size_type>(position - this->begin());
 				if (this->_size + n > this->_capacity * 2)
 					this->reserve(this->_size + n);
@@ -264,7 +272,7 @@ namespace ft
 					this->_alloc.destroy(&(*rit));
 				}
 				for(InputIterator it = first; it != last; ++it)
-					this->_alloc.construct(&(*position) + static_cast<size_type>(it - first), *it);
+					this->_alloc.construct(&(*(position++))/* + static_cast<size_type>(it - first)*/, *it);
 				this->_size += n;
 			}
 			iterator erase(iterator position) { return (this->erase(position, position + 1)); }
@@ -273,7 +281,7 @@ namespace ft
 					this->_alloc.destroy(&(*it));
 				for(iterator it = last; it != this->end(); ++it)
 				{
-					this->_alloc.construct(first + static_cast<size_type>(it - last), *it);
+					this->_alloc.construct(&(*(first + static_cast<size_type>(it - last))), *it);
 					this->_alloc.destroy(&(*it));
 				}
 				this->_size -= static_cast<size_type>(last - first);
