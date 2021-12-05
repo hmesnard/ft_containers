@@ -52,7 +52,7 @@ namespace ft
 			RBTiterator(Node* node = NULL, Node* root = NULL) : node(node), root(root) {}
 			virtual ~RBTiterator() {}
 
-			operator RBTiterator<T const>() const { return (RBTiterator<T const>(this->node)); }
+			operator RBTiterator<T const>() const { return (RBTiterator<T const>(this->node, this->root)); }
 
 			RBTiterator&	operator=(const RBTiterator& rhs) {
 				this->node = rhs.node;
