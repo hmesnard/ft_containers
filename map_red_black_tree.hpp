@@ -146,16 +146,12 @@ namespace ft
 			typedef typename allocator_type::size_type				size_type;
 
 			MapRBT(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _root(NULL), _alloc(alloc), _comp(comp) {}
-			iterator	begin(bool left = true) const {
+			iterator	begin() const {
 				if (!this->_root || this->_root->leaf())
 					return (iterator(NULL, this->_root));
 				Node*	node = this->_root;
-				if (left)
-					while (!node->left->leaf())
-						node = node->left;
-				else
-					while (!node->right->leaf())
-						node = node->right;
+				while (!node->left->leaf())
+					node = node->left;
 				return (iterator(node, this->_root));
 			}
 			iterator	end() const { return (iterator(NULL, this->_root)); }
