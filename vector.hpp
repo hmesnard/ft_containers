@@ -244,8 +244,9 @@ namespace ft
 			void push_back(const value_type& val) { this->resize(this->_size + 1, val); }
 			void pop_back() { this->resize(this->_size - 1); }
 			iterator insert(iterator position, const value_type& val) {
+				size_type	pos = static_cast<size_type>(position - this->begin());
 				this->insert(position, 1, val);
-				return (position);
+				return (this->begin() + pos);
 			}
 			void insert(iterator position, size_type n, const value_type& val) {
 				size_type	pos = static_cast<size_type>(position - this->begin());
