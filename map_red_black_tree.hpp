@@ -217,9 +217,9 @@ namespace ft
 				Node* node = this->_root;
 				while (!node->leaf())
 				{
-					if (val.first < node->value.first)
+					if (this->_comp(val.first, node->value.first))//(val.first < node->value.first)
 						node = node->left;
-					else if (val.first > node->value.first)
+					else if (this->_comp(node->value.first, val.first))//(val.first > node->value.first)
 						node = node->right;
 					else
 						return (ft::make_pair(iterator(node, this->_root), false));
@@ -257,9 +257,9 @@ namespace ft
 				}
 				while (!node->leaf())
 				{
-					if (k < node->value.first)
+					if (this->_comp(k, node->value.first))//(k < node->value.first)
 						node = node->left;
-					else if (k > node->value.first)
+					else if (this->_comp(node->value.first, k))//(k > node->value.first)
 						node = node->right;
 					else
 						break ;
