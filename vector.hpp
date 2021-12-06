@@ -188,6 +188,8 @@ namespace ft
 			void reserve(size_type n) {
 				if (n > this->_capacity)
 				{
+					if (n > this->max_size())
+						throw (std::length_error("vector::_M_fill_insert"));
 					pointer	tmp = this->_alloc.allocate(n);
 					for(size_type i = 0; i < this->_size; ++i)
 					{
