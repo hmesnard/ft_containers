@@ -25,12 +25,6 @@ namespace ft
 	template<>
 	struct is_integral<char> : public is_integral_parent<true> {};
 
-/*	template<>
-	struct is_integral<char16_t> : public is_integral_parent<true> {};
-
-	template<>
-	struct is_integral<char32_t> : public is_integral_parent<true> {};
-*/
 	template<>
 	struct is_integral<wchar_t> : public is_integral_parent<true> {};
 

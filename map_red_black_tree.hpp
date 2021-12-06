@@ -9,20 +9,20 @@ namespace ft
 	template<class Key, class T>
 	struct Node
 	{
-		typedef Node * branch;
+		typedef Node *				branch;
 		typedef ft::pair<Key, T>	value_type;
 
 		Node(value_type val = value_type(), bool red = false, branch parent = NULL) : parent(parent), left(NULL), right(NULL), red(red), value(val) {}
 
-		branch	parent;
-		branch	left;
-		branch	right;
+		branch		parent;
+		branch		left;
+		branch		right;
 
-		bool	red;
+		bool		red;
 
-		value_type	value; //pointeur plutot ? DONE UNDONE
+		value_type	value;
 
-		bool	leaf() {
+		bool		leaf() {
 			if (this->left && this->right)
 				return (false);
 			else if (!this->left && !this->right)
@@ -47,12 +47,11 @@ namespace ft
 			typedef	typename value_type::second_type	mapped_type;
 			typedef Node<const key_type, mapped_type>	Node;
 
-			//RBTiterator() : node(NULL), root(NULL) {}
-			RBTiterator(const RBTiterator& src) : node(src.node), root(src.root) {}
 			RBTiterator(Node* node = NULL, Node* root = NULL) : node(node), root(root) {}
+			RBTiterator(const RBTiterator& src) : node(src.node), root(src.root) {}
 			virtual ~RBTiterator() {}
 
-			operator RBTiterator<T const>() const { return (RBTiterator<T const>(this->node, this->root)); }
+			operator	RBTiterator<T const>() const { return (RBTiterator<T const>(this->node, this->root)); }
 
 			RBTiterator&	operator=(const RBTiterator& rhs) {
 				this->node = rhs.node;
@@ -60,13 +59,13 @@ namespace ft
 				return (*this);
 			}
 
-			bool operator==(const RBTiterator & rhs) const { return (this->node == rhs.node); }
-			bool operator!=(const RBTiterator & rhs) const { return (this->node != rhs.node); }
+			bool	operator==(const RBTiterator & rhs) const { return (this->node == rhs.node); }
+			bool	operator!=(const RBTiterator & rhs) const { return (this->node != rhs.node); }
 
 			reference	operator*() const { return (this->node->value); }
 			pointer		operator->() const { return (&(this->node->value)); }
 
-			RBTiterator& operator++() {
+			RBTiterator&	operator++() {
 				if (!this->node)
 				{
 					this->node = this->root;
@@ -90,7 +89,7 @@ namespace ft
 				}
 				return (*this);
 			}
-			RBTiterator	operator++(int) {
+			RBTiterator		operator++(int) {
 				RBTiterator	res = *this;
 				++*this;
 				return (res);
@@ -120,7 +119,7 @@ namespace ft
 				}
 				return (*this);
 			}
-			RBTiterator	operator--(int) {
+			RBTiterator		operator--(int) {
 				RBTiterator	res = *this;
 				--*this;
 				return (res);
@@ -137,13 +136,13 @@ namespace ft
 	{
 		public:
 
-			typedef Key			key_type;
-			typedef T			mapped_type;
-			typedef ft::pair<const key_type, mapped_type>			value_type;
-			typedef Compare		key_compare;
-			typedef Alloc		allocator_type;
-			typedef RBTiterator<value_type>				iterator;
-			typedef typename allocator_type::size_type				size_type;
+			typedef Key										key_type;
+			typedef T										mapped_type;
+			typedef ft::pair<const key_type, mapped_type>	value_type;
+			typedef Compare									key_compare;
+			typedef Alloc									allocator_type;
+			typedef RBTiterator<value_type>					iterator;
+			typedef typename allocator_type::size_type		size_type;
 
 			MapRBT(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _root(NULL), _alloc(alloc), _comp(comp) {}
 			iterator	begin() const {
@@ -156,7 +155,7 @@ namespace ft
 			}
 			iterator	end() const { return (iterator(NULL, this->_root)); }
 
-			bool empty() const { return (!this->_root || this->_root->leaf()); }
+			bool 		empty() const { return (!this->_root || this->_root->leaf()); }
 			size_type size() const {
 				size_type	res = 0;
 
@@ -164,12 +163,11 @@ namespace ft
 					++res;
 				return (res);
 			}
-			size_type max_size() const { return (this->_alloc.max_size()); }
+			size_type	max_size() const { return (this->_alloc.max_size()); }
 
-			void left_rotate(Node* x) {
+			void		left_rotate(Node* x) {
 				if (!x || x->leaf() || x->right->leaf())
 					return ;
-				//if (x->right->left)
 				x->right->left->parent = x;
 				x->right->parent = x->parent;
 				x->parent = x->right;
@@ -182,10 +180,9 @@ namespace ft
 				else if (this->_root == x)
 					this->_root = x->parent;
 			}
-			void right_rotate(Node* x) {
+			void		right_rotate(Node* x) {
 				if (!x || x->leaf() || x->left->leaf())
 					return ;
-				//if (x->left->right)
 				x->left->right->parent = x;
 				x->left->parent = x->parent;
 				x->parent = x->left;
@@ -202,14 +199,10 @@ namespace ft
 			{
 				if (!this->_root)
 				{
-					//root = new Node();
 					this->_root = this->_alloc.allocate(1);
 					this->_alloc.construct(_root, Node(val));
-					//this->_root->value = val;
-					//root->left = new Node(T(), false, root);
 					this->_root->left = this->_alloc.allocate(1);
 					this->_alloc.construct(_root->left, Node(value_type(), false, this->_root));
-					//root->right = new Node(T(), false, root);
 					this->_root->right = this->_alloc.allocate(1);
 					this->_alloc.construct(_root->right, Node(value_type(), false, this->_root));
 					return (ft::make_pair(iterator(this->_root, this->_root), true));
@@ -217,28 +210,24 @@ namespace ft
 				Node* node = this->_root;
 				while (!node->leaf())
 				{
-					if (this->_comp(val.first, node->value.first))//(val.first < node->value.first)
+					if (this->_comp(val.first, node->value.first))
 						node = node->left;
-					else if (this->_comp(node->value.first, val.first))//(val.first > node->value.first)
+					else if (this->_comp(node->value.first, val.first))
 						node = node->right;
 					else
 						return (ft::make_pair(iterator(node, this->_root), false));
 				}
-				//node->value = val;
-				//node->red = true;
 				Node* parent = node->parent;
 				this->_alloc.destroy(node);
 				this->_alloc.construct(node, Node(val, true, parent));
-				//node->left = new Node<T>(T(), false, node);
 				node->left = this->_alloc.allocate(1);
 				this->_alloc.construct(node->left, Node(value_type(), false, node));
-				//node->right = new Node<T>(T(), false, node);
 				node->right = this->_alloc.allocate(1);
 				this->_alloc.construct(node->right, Node(value_type(), false, node));
 				fix(node);
 				return (ft::make_pair(iterator(node, this->_root), true));
 			}
-			bool erase(const key_type& k)
+			bool	erase(const key_type& k)
 			{
 				Node* node = this->_root;
 				Node* next;
@@ -257,9 +246,9 @@ namespace ft
 				}
 				while (!node->leaf())
 				{
-					if (this->_comp(k, node->value.first))//(k < node->value.first)
+					if (this->_comp(k, node->value.first))
 						node = node->left;
-					else if (this->_comp(node->value.first, k))//(k > node->value.first)
+					else if (this->_comp(node->value.first, k))
 						node = node->right;
 					else
 						break ;
@@ -275,7 +264,6 @@ namespace ft
 						node->parent->left = node->right;
 					else if (node->parent)
 						node->parent->right = node->right;
-					//if (node->right)
 					node->right->parent = node->parent;
 				}
 				else if (node->right->leaf())
@@ -286,7 +274,6 @@ namespace ft
 						node->parent->left = node->left;
 					else if (node->parent)
 						node->parent->right = node->left;
-					//if (node->left)
 					node->left->parent = node->parent;
 				}
 				else
@@ -295,7 +282,6 @@ namespace ft
 					while (!next->left->leaf())
 						next = next->left;
 					x = next->right;
-					//if (next->right)
 					next->right->parent = next->parent;
 					if (next->parent->right == next)
 						next->parent->right = next->right;
@@ -309,7 +295,6 @@ namespace ft
 					next->parent = node->parent;
 					node->left->parent = next;
 					next->left = node->left;
-					//if (node->right)
 					node->right->parent = next;
 					next->right = node->right;
 				}
@@ -346,12 +331,6 @@ namespace ft
 				if (node->leaf())
 					return (this->insert(ft::make_pair(k, mapped_type())).first->second);
 				return (node->value.second);
-				/*for(iterator it = this->begin(); it != this->end(); ++it)
-				{
-					if (it->first == k)
-						return(it->second);
-				}
-				return (this->insert(ft::make_pair(k, mapped_type())).first->second);*/
 			}
 			void	swap(MapRBT& x)
 			{
@@ -359,7 +338,7 @@ namespace ft
 				this->_root = x._root;
 				x._root = temp;
 			}
-			iterator find(const key_type& k) const {
+			iterator	find(const key_type& k) const {
 				Node*	node = this->_root;
 
 				if (!node)
@@ -377,7 +356,7 @@ namespace ft
 					return (this->end());
 				return (iterator(node, this->_root));
 			}
-			bool exist(const key_type& k) const {
+			bool	exist(const key_type& k) const {
 				Node*	node = this->_root;
 
 				if (!node)
@@ -395,7 +374,7 @@ namespace ft
 					return (false);
 				return (true);
 			}
-			iterator lower_bound(const key_type& k) const {
+			iterator	lower_bound(const key_type& k) const {
 				Node*	node = this->_root;
 
 				if (!node)
@@ -414,11 +393,11 @@ namespace ft
 				else
 					return (++iterator(node->parent, this->_root));
 			}
-			iterator upper_bound(const key_type& k) const {
+			iterator	upper_bound(const key_type& k) const {
 				Node*	node = this->_root;
 
 				if (!node)
-					return (this->end()); //this->end() partout a la place de ca
+					return (this->end());
 				while (!node->leaf())
 				{
 					if (this->_comp(k, node->value.first))
@@ -439,7 +418,8 @@ namespace ft
 			Node*			_root;
 			allocator_type	_alloc;
 			key_compare		_comp;
-			void fixdel(Node* node)
+
+			void	fixdel(Node* node)
 			{
 				Node* sibling = (node->parent->left == node) ? node->parent->right : node->parent->left;
 
@@ -473,7 +453,7 @@ namespace ft
 						return ;
 				}
 				else if ((node->parent->left == node && sibling->left->red && !sibling->right->red) ||
-						(node->parent->right == node && sibling->right->red && !sibling->left->red)) //node peut il etre root ici ???
+						(node->parent->right == node && sibling->right->red && !sibling->left->red))
 				{
 					sibling->right->red = false;
 					sibling->left->red = false;
@@ -482,7 +462,7 @@ namespace ft
 						right_rotate(sibling);
 					else
 						left_rotate(sibling);
-					fixdel(node); //put case 4 here??
+					fixdel(node);
 				}
 				else
 				{
@@ -500,7 +480,7 @@ namespace ft
 				}
 			}
 
-			void fix(Node* node)
+			void	fix(Node* node)
 			{
 				if (node && !node->leaf() && node == _root && node->red)
 					node->red = false;

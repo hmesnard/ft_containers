@@ -15,7 +15,7 @@ namespace ft
 		typedef Reference reference;
 		typedef Category  iterator_category;
 	};
-	//remettre les iterator tags
+
 	template<class Iterator>
 	class iterator_traits
 	{
@@ -76,7 +76,7 @@ namespace ft
 			pointer		operator->() const {
 				iterator_type	tmp = this->_base;
 				return (&(*(--tmp)));
-			} //test ca
+			}
 			reference	operator[](difference_type n) const { return (*(_base - (n + 1))); }
 
 			reverse_iterator &	operator++() {
@@ -98,8 +98,8 @@ namespace ft
 				return (ret);
 			}
 
-			reverse_iterator	operator+(difference_type n) const { return (reverse_iterator/*<It>*/(_base - n)); }
-			reverse_iterator	operator-(difference_type n) const { return (reverse_iterator/*<It>*/(_base + n)); }
+			reverse_iterator	operator+(difference_type n) const { return (reverse_iterator(_base - n)); }
+			reverse_iterator	operator-(difference_type n) const { return (reverse_iterator(_base + n)); }
 
 			reverse_iterator &	operator+=(difference_type n) {
 				this->_base -= n;
