@@ -49,6 +49,9 @@ namespace ft
 			template<class T1, class T2>
 			friend bool	operator>=(Viterator<T1> const &lhs, Viterator<T2> const &rhs);// { return (lhs.ptr >= rhs.ptr); }
 
+			template<class T1, class T2>
+			friend typename Viterator<T1>::difference_type	operator-(Viterator<T1> const &lhs, Viterator<T2> const &rhs);
+
 			reference	operator*() const { return (*(this->ptr)); }
 			pointer		operator->() const { return (this->ptr); }
 			reference	operator[](difference_type n) const { return (*(this->ptr + n)); }
@@ -84,7 +87,7 @@ namespace ft
 				ret.ptr -= n;
 				return (ret);
 			}
-			difference_type	operator-(Viterator const & rhs) const { return (this->ptr - rhs.ptr); }
+			//difference_type	operator-(Viterator const & rhs) const { return (this->ptr - rhs.ptr); }
 
 			Viterator &	operator+=(difference_type n) {
 				this->ptr += n;
@@ -101,6 +104,9 @@ namespace ft
 
 	template<class T>
 	Viterator<T>	operator+(typename Viterator<T>::difference_type n, Viterator<T> const & rhs) { return (rhs.operator+(n)); } //bonne maniere d'implementer cet overload ?
+
+	template<class T1, class T2>
+	typename Viterator<T1>::difference_type	operator-(Viterator<T1> const &lhs, Viterator<T2> const &rhs) { return (lhs.ptr - rhs.ptr); }
 
 	//template<class T>
 	//bool	operator==(Viterator<T> const & lhs, Viterator<const T> const & rhs) { std::cout << "222" << std::endl; return (lhs.ptr == rhs.ptr); }
