@@ -331,12 +331,27 @@ namespace ft
 				return (true);
 			}
 			mapped_type&	brackets(const key_type& k) {
-				for(iterator it = this->begin(); it != this->end(); ++it)
+				Node*	node = this->_root;
+				if (!node || node->leaf())
+					return (this->insert(ft::make_pair(k, mapped_type())).first->second);
+				while (!node->leaf())
+				{
+					if (this->_comp(k, node->value.first))
+						node = node->left;
+					else if (this->_comp(node->value.first, k))
+						node = node->right;
+					else
+						break ;
+				}
+				if (node->leaf())
+					return (this->insert(ft::make_pair(k, mapped_type())).first->second);
+				return (node->value.second);
+				/*for(iterator it = this->begin(); it != this->end(); ++it)
 				{
 					if (it->first == k)
 						return(it->second);
 				}
-				return (this->insert(ft::make_pair(k, mapped_type())).first->second);
+				return (this->insert(ft::make_pair(k, mapped_type())).first->second);*/
 			}
 			void	swap(MapRBT& x)
 			{
