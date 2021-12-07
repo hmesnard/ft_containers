@@ -48,7 +48,7 @@ namespace ft
 			typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
 			typedef typename allocator_type::size_type						size_type;
 
-			typedef ft::MapRBT<key_type, mapped_type, key_compare>	RBT;
+			typedef ft::MapRBT<key_type, mapped_type, key_compare, allocator_type>	RBT;
 
 			explicit map(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _alloc(alloc), _comp(comp), _tree(RBT()) {}
 			template <class InputIterator>

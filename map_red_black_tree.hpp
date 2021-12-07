@@ -131,18 +131,18 @@ namespace ft
 			Node*	root;
 	};
 
-	template<class Key, class T, class Compare, class Node = Node<const Key, T>, class Alloc = std::allocator<Node> >
+	template<class Key, class T, class Compare, class Alloc, class Node = Node<const Key, T> >
 	class MapRBT
 	{
 		public:
 
-			typedef Key										key_type;
-			typedef T										mapped_type;
-			typedef ft::pair<const key_type, mapped_type>	value_type;
-			typedef Compare									key_compare;
-			typedef Alloc									allocator_type;
-			typedef RBTiterator<value_type>					iterator;
-			typedef typename allocator_type::size_type		size_type;
+			typedef Key												key_type;
+			typedef T												mapped_type;
+			typedef ft::pair<const key_type, mapped_type>			value_type;
+			typedef Compare											key_compare;
+			typedef typename Alloc::template rebind<Node>::other	allocator_type;
+			typedef RBTiterator<value_type>							iterator;
+			typedef typename allocator_type::size_type				size_type;
 
 			MapRBT(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _root(NULL), _alloc(alloc), _comp(comp) {}
 			iterator	begin() const {
