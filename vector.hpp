@@ -212,6 +212,8 @@ namespace ft
 			const_reference	front() const { return (*(this->_begin)); }
 			reference		back() { return (*(this->_begin + this->_size - 1)); }
 			const_reference	back() const { return (*(this->_begin + this->_size - 1)); }
+			pointer			data() { return (this->_begin); }
+			const pointer	data() const { return (this->_begin); }
 
 			template<class InputIterator>
 			void 	assign(InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = NULL) {

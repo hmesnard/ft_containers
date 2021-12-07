@@ -75,7 +75,9 @@ namespace ft
 			size_type	size() const { return (this->_tree.size()); }
 			size_type	max_size() const { return (this->_tree.max_size()); }
 
-			mapped_type&	operator[](const key_type& k) { return (this->_tree.brackets(k)); }
+			mapped_type&		operator[](const key_type& k) { return (this->_tree.brackets(k)); }
+			mapped_type&		at(const key_type& k) { return (this->_tree.brackets(k, true)); }
+			const mapped_type&	at(const key_type& k) const { return (this->_tree.brackets(k, true)); }
 
 			pair<iterator, bool>	insert(const value_type& val) { return(this->_tree.insert(val)); }
 			iterator				insert(iterator position, const value_type& val) {

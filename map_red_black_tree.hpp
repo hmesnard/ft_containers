@@ -315,7 +315,7 @@ namespace ft
 					fixdel(x);
 				return (true);
 			}
-			mapped_type&	brackets(const key_type& k) {
+			mapped_type&	brackets(const key_type& k, bool at = false) {
 				Node*	node = this->_root;
 				if (!node || node->leaf())
 					return (this->insert(ft::make_pair(k, mapped_type())).first->second);
@@ -328,9 +328,11 @@ namespace ft
 					else
 						break ;
 				}
-				if (node->leaf())
+				if (!node->leaf())
+					return (node->value.second);
+				else if (!at)
 					return (this->insert(ft::make_pair(k, mapped_type())).first->second);
-				return (node->value.second);
+				throw (std::out_of_range("map::at:  key not found"));
 			}
 			void	swap(MapRBT& x)
 			{
