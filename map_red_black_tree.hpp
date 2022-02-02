@@ -265,6 +265,7 @@ namespace ft
 					else if (node->parent)
 						node->parent->right = node->right;
 					node->right->parent = node->parent;
+					this->_alloc.deallocate(node->left, 1);
 				}
 				else if (node->right->leaf())
 				{
@@ -275,6 +276,7 @@ namespace ft
 					else if (node->parent)
 						node->parent->right = node->left;
 					node->left->parent = node->parent;
+					this->_alloc.deallocate(node->right, 1);
 				}
 				else
 				{
